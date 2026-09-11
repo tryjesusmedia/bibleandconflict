@@ -1,0 +1,9 @@
+node_modules/
+.expo/
+dist/
+supabase/.temp/
+.env
+.env.*
+.git/
+*.aab
+*.apk
