@@ -1,0 +1,21 @@
+export const colors = {
+  navy: '#010C18',
+  navy2: '#03101D',
+  panel: '#071827',
+  panel2: '#0C2232',
+  gold: '#E5B55B',
+  goldDeep: '#C79341',
+  teal: '#298075',
+  tealDeep: '#186059',
+  ivory: '#EBE9DE',
+  paper: '#FDFAF2',
+  text: '#FDFAF2',
+  muted: '#B9C2C5',
+  green: '#61C6A9',
+  red: '#F28B82',
+  border: 'rgba(229,181,91,0.28)',
+  charcoal: '#010C18',
+  plum: '#0C2232',
+} as const;
+
+export const radius = { sm: 12, md: 18, lg: 26 } as const;

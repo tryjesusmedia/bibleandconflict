@@ -1,0 +1,13 @@
+{
+  "canonicalSource": "https://tryjesusmedia.com/bibleandconflictoftheages/data/readings.json",
+  "sourceRepositoryPath": "tjm-site/bibleandconflictoftheages/data/readings.json",
+  "sha256": "5c4237173848332111b4816ab48924012b8490011c73a9dfe34e0a7591d222bd",
+  "planId": "bible-conflict-ages-v1",
+  "progressPlanId": "bible-conflict-ages-chapters-v1",
+  "readingCount": 264,
+  "scriptureTaskCount": 1373,
+  "companionTaskCount": 323,
+  "totalTaskCount": 1696,
+  "pointsPerItem": 10,
+  "leaderboardRpc": "get_conflict_journey_leaderboard"
+}

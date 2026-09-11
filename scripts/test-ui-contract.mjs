@@ -1,0 +1,55 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+
+const appConfig = JSON.parse(await readFile(new URL('../app.json', import.meta.url), 'utf8')).expo;
+const packageJson = JSON.parse(await readFile(new URL('../package.json', import.meta.url), 'utf8'));
+const home = await readFile(new URL('../app/index.tsx', import.meta.url), 'utf8');
+const reading = await readFile(new URL('../app/reading.tsx', import.meta.url), 'utf8');
+const menu = await readFile(new URL('../components/AccountMenu.tsx', import.meta.url), 'utf8');
+const provider = await readFile(new URL('../contexts/ConflictJourneyContext.tsx', import.meta.url), 'utf8');
+
+assert.equal(appConfig.name, 'Bible and Conflict of the Ages');
+assert.equal(appConfig.slug, 'bible-and-conflict-of-the-ages');
+assert.equal(appConfig.scheme, 'bibleandconflict');
+assert.equal(appConfig.owner, 'try-jesus-media');
+assert.equal(appConfig.version, '1.0.0');
+assert.equal(appConfig.android.package, 'com.tryjesusmedia.bibleandconflict');
+assert.equal(appConfig.android.versionCode, 1);
+assert.equal(appConfig.android.softwareKeyboardLayoutMode, 'resize');
+assert.equal(appConfig.ios.bundleIdentifier, 'com.tryjesusmedia.bibleandconflict');
+assert.equal(appConfig.ios.buildNumber, '1');
+assert.equal(appConfig.extra.eas?.projectId, undefined, 'A fresh app must not inherit another EAS project');
+assert.equal(appConfig.updates?.url, undefined, 'A fresh app must not inherit another update channel');
+assert.equal(packageJson.version, '1.0.0');
+
+assert.match(home, /'journey' \| 'progress' \| 'leaderboard'/u);
+assert.match(home, /conflictPlan\.books\.map/u);
+assert.match(home, /Read more about this journey/u);
+assert.match(home, /THE UNSHAKABLE FOUNDATION/u);
+assert.match(home, /THE FIVE COMPANION VOLUMES/u);
+assert.match(home, /Google sign-in is optional/u);
+assert.match(home, /Powered by FaithCraft\.Agency/u);
+assert.doesNotMatch(home, /264 readings|313 reading tasks|review queue|your reading place|spiritual worth/iu);
+
+const nativePosition = reading.indexOf('task.reference');
+const dividerPosition = reading.indexOf('<View style={styles.verticalDivider}');
+const gatewayPosition = reading.indexOf('Read on BibleGateway');
+assert.ok(nativePosition >= 0 && nativePosition < dividerPosition && dividerPosition < gatewayPosition, 'Each Scripture row must show native passage, divider, then BibleGateway');
+assert.match(reading, /pathname: '\/bible-reader'/u);
+assert.match(reading, /translation: 'KJV'/u);
+assert.match(reading, /Read on EGW Writings/u);
+assert.match(reading, /router\.replace\(\{ pathname: '\/reading'/u, 'Previous and next navigation must update the saved reading route');
+assert.doesNotMatch(`${home}\n${reading}`, /principle|highlight|my notes|notes button/iu);
+
+assert.match(menu, /Sign in with Google/u);
+assert.match(menu, /Sign out/u);
+assert.match(menu, /Account & privacy/u);
+assert.match(menu, /Privacy policy/u);
+assert.match(menu, /Account deletion information/u);
+assert.match(menu, /Delete My Account and Data/u);
+assert.match(menu, /section === 'account' && session[^]*Delete My Account and Data/u, 'Deletion must render only inside Menu → Account & privacy');
+assert.match(menu, /shared Try Jesus account and synced data across Bible and Conflict of the Ages, Try Jesus: The Journey, and both website reading plans/u);
+assert.match(provider, /prepareConflictDetach\(userId, true\)/u);
+assert.match(provider, /functions\.invoke\('delete-account'/u);
+
+console.log('Standalone identity, senior-friendly journey UI, split reader links, settings, privacy, and account deletion passed.');
