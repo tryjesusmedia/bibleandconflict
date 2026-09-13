@@ -25,11 +25,11 @@ export async function ensureConflictAlias() {
   return alias;
 }
 
-export async function changeConflictAlias() {
-  const { data, error } = await supabase.rpc('reroll_journey_alias');
-  if (error) throw new Error(message(error, 'A new alias could not be chosen right now.'));
+export async function updateConflictAlias(nextAlias: string) {
+  const { data, error } = await supabase.rpc('update_journey_alias', { p_alias: nextAlias });
+  if (error) throw new Error(message(error, 'Your leaderboard name could not be saved right now.'));
   const alias = textValue(data);
-  if (!alias) throw new Error('A new alias could not be chosen right now.');
+  if (!alias) throw new Error('Your leaderboard name could not be saved right now.');
   return alias;
 }
 

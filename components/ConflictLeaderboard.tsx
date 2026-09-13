@@ -37,9 +37,15 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
   const [nameOpen, setNameOpen] = useState(false);
   const [nameDraft, setNameDraft] = useState('');
   const [savingName, setSavingName] = useState(false);
+  const [aliasOpen, setAliasOpen] = useState(false);
+  const [aliasDraft, setAliasDraft] = useState('');
+  const [savingAlias, setSavingAlias] = useState(false);
+  const [leaderboardOpen, setLeaderboardOpen] = useState(true);
   const request = useRef(0);
   const lastTap = useRef(0);
   const longPressFired = useRef(false);
+  const lastAliasTap = useRef(0);
+  const aliasLongPressFired = useRef(false);
 
   const refresh = useCallback(async () => {
     if (!userId || !active) return;
@@ -100,20 +106,37 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
     }
   };
 
-  const confirmAliasChange = () => {
-    Alert.alert(
-      'Choose a new random alias?',
-      'Your current alias will be replaced. Other readers cannot choose or edit it.',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Change alias',
-          onPress: () => void identity.rerollAlias().then(refresh).catch((caught) => {
-            Alert.alert('Alias not changed', caught instanceof Error ? caught.message : 'Please try again.');
-          }),
-        },
-      ],
-    );
+  const openAliasEditor = () => {
+    if (!userId || !identity.alias) return;
+    setAliasDraft(identity.alias);
+    setAliasOpen(true);
+  };
+
+  const handleAliasPress = () => {
+    if (aliasLongPressFired.current) {
+      aliasLongPressFired.current = false;
+      return;
+    }
+    const now = Date.now();
+    if (now - lastAliasTap.current <= 450) {
+      lastAliasTap.current = 0;
+      openAliasEditor();
+    } else {
+      lastAliasTap.current = now;
+    }
+  };
+
+  const saveAlias = async () => {
+    setSavingAlias(true);
+    try {
+      await identity.saveAlias(aliasDraft);
+      setAliasOpen(false);
+      await refresh();
+    } catch (caught) {
+      Alert.alert('Name not saved', caught instanceof Error ? caught.message : 'Please try again.');
+    } finally {
+      setSavingAlias(false);
+    }
   };
 
   const nextLabel = rewards.nextMilestone === null
@@ -162,9 +185,17 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
       </View>
 
       <View style={styles.panel}>
-        <Text style={styles.eyebrow}>ALL READERS</Text>
-        <Text style={styles.panelTitle}>Journey leaderboard</Text>
-        {!userId ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityState={{ expanded: leaderboardOpen }}
+          accessibilityLabel={`${leaderboardOpen ? 'Close' : 'Open'} Journey leaderboard`}
+          onPress={() => setLeaderboardOpen((open) => !open)}
+          style={styles.leaderboardToggle}
+        >
+          <View style={styles.leaderboardTitleCopy}><Text style={styles.eyebrow}>ALL READERS</Text><Text style={[styles.panelTitle, styles.leaderboardTitle]}>Journey leaderboard</Text></View>
+          <Text style={styles.toggleMark}>{leaderboardOpen ? '−' : '+'}</Text>
+        </Pressable>
+        {leaderboardOpen && (!userId ? (
           <View style={styles.empty}>
             <Text style={styles.emptyTitle}>Sign in to view the leaderboard.</Text>
             <Text style={styles.body}>Your local progress remains available without an account.</Text>
@@ -182,15 +213,20 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
               <View key={`${entry.rank}:${entry.alias}`} style={[styles.row, entry.isCurrentUser && styles.currentRow]}>
                 <Text style={styles.rank}>#{entry.rank}</Text>
                 <View style={styles.identity}>
-                  <View style={styles.aliasLine}>
-                    <Text numberOfLines={2} style={styles.alias}>{entry.alias}</Text>
-                    {entry.isCurrentUser ? <Text style={styles.you}>YOU</Text> : null}
-                  </View>
-                  {entry.isCurrentUser ? (
-                    <Pressable accessibilityRole="button" onPress={confirmAliasChange}>
-                      <Text style={styles.aliasChange}>Change alias</Text>
+                  <View style={styles.aliasLine}>{entry.isCurrentUser ? (
+                    <Pressable
+                      accessibilityRole="button"
+                      accessibilityLabel={`${entry.alias}. Double-tap or press and hold to change your leaderboard name.`}
+                      delayLongPress={1400}
+                      onLongPress={() => { aliasLongPressFired.current = true; openAliasEditor(); }}
+                      onPress={handleAliasPress}
+                      style={styles.aliasEdit}
+                    >
+                      <Text numberOfLines={2} style={styles.alias}>{entry.alias}</Text>
+                      <Text style={styles.aliasHint}>Double-tap or hold to edit</Text>
                     </Pressable>
-                  ) : null}
+                  ) : <Text numberOfLines={2} style={styles.alias}>{entry.alias}</Text>}
+                    {entry.isCurrentUser ? <Text style={styles.you}>YOU</Text> : null}</View>
                 </View>
                 <View style={styles.score}>
                   <Text style={styles.scoreMain}>{entry.journeyPoints.toLocaleString()} JP</Text>
@@ -199,7 +235,7 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
               </View>
             ))}
           </View>
-        )}
+        ))}
       </View>
 
       <Modal visible={nameOpen} transparent animationType="fade" onRequestClose={() => setNameOpen(false)}>
@@ -208,7 +244,7 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
           <KeyboardAvoidingView pointerEvents="box-none" behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalCenter}>
             <View style={styles.modalCard}>
               <Text style={styles.modalTitle}>Your welcome name</Text>
-              <Text style={styles.body}>This name is private. Only your random alias appears on the leaderboard.</Text>
+              <Text style={styles.body}>This welcome name is private. Only your chosen leaderboard name appears publicly.</Text>
               <TextInput
                 accessibilityLabel="First name"
                 autoCapitalize="words"
@@ -222,6 +258,22 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
               <View style={styles.modalActions}>
                 <Pressable disabled={savingName} onPress={() => setNameOpen(false)} style={styles.modalButton}><Text style={styles.modalCancel}>Cancel</Text></Pressable>
                 <Pressable disabled={savingName} onPress={() => void saveName()} style={[styles.modalButton, styles.modalSave]}><Text style={styles.modalSaveText}>{savingName ? 'Saving…' : 'Save'}</Text></Pressable>
+              </View>
+            </View>
+          </KeyboardAvoidingView>
+        </View>
+      </Modal>
+      <Modal visible={aliasOpen} transparent animationType="fade" onRequestClose={() => setAliasOpen(false)}>
+        <View style={styles.modalScrim}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Close leaderboard name editor" onPress={() => setAliasOpen(false)} style={styles.modalBackdrop} />
+          <KeyboardAvoidingView pointerEvents="box-none" behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalCenter}>
+            <View style={styles.modalCard}>
+              <Text style={styles.modalTitle}>Your leaderboard name</Text>
+              <Text style={styles.body}>This name is public and appears on both Journey leaderboards. Your account details remain private.</Text>
+              <TextInput accessibilityLabel="Leaderboard name" autoCapitalize="words" autoCorrect={false} maxLength={40} onChangeText={setAliasDraft} selectTextOnFocus style={styles.input} value={aliasDraft} />
+              <View style={styles.modalActions}>
+                <Pressable disabled={savingAlias} onPress={() => setAliasOpen(false)} style={styles.modalButton}><Text style={styles.modalCancel}>Cancel</Text></Pressable>
+                <Pressable disabled={savingAlias} onPress={() => void saveAlias()} style={[styles.modalButton, styles.modalSave]}><Text style={styles.modalSaveText}>{savingAlias ? 'Saving…' : 'Save'}</Text></Pressable>
               </View>
             </View>
           </KeyboardAvoidingView>
@@ -246,6 +298,10 @@ const styles = StyleSheet.create({
   small: { color: colors.ivory, fontSize: 15, lineHeight: 22, marginTop: 3 },
   panel: { borderRadius: radius.lg, padding: 20, backgroundColor: colors.panel, borderWidth: 1, borderColor: colors.border },
   panelTitle: { color: colors.ivory, fontSize: 25, lineHeight: 31, fontWeight: '900', marginBottom: 14 },
+  leaderboardToggle: { minHeight: 64, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  leaderboardTitleCopy: { flex: 1 },
+  leaderboardTitle: { marginBottom: 0 },
+  toggleMark: { color: colors.gold, fontSize: 34, lineHeight: 38, fontWeight: '700' },
   milestone: { minHeight: 53, flexDirection: 'row', alignItems: 'center', gap: 14, borderTopWidth: 1, borderTopColor: colors.border },
   milestoneMark: { color: colors.muted, fontSize: 25, width: 28 },
   earned: { color: colors.green },
@@ -260,8 +316,9 @@ const styles = StyleSheet.create({
   identity: { flex: 1, minWidth: 0 },
   aliasLine: { flexDirection: 'row', alignItems: 'center', gap: 7 },
   alias: { color: colors.ivory, flexShrink: 1, fontSize: 17, lineHeight: 22, fontWeight: '900' },
+  aliasEdit: { flexShrink: 1 },
+  aliasHint: { color: colors.gold, fontSize: 11, lineHeight: 16, fontWeight: '800' },
   you: { color: colors.navy, backgroundColor: colors.gold, fontSize: 10, lineHeight: 17, paddingHorizontal: 6, borderRadius: 7, fontWeight: '900' },
-  aliasChange: { color: colors.gold, fontSize: 14, lineHeight: 22, fontWeight: '900', textDecorationLine: 'underline' },
   score: { alignItems: 'flex-end' },
   scoreMain: { color: colors.ivory, fontSize: 16, lineHeight: 22, fontWeight: '900' },
   scoreSmall: { color: colors.muted, fontSize: 12, lineHeight: 18 },

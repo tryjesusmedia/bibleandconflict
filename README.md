@@ -1,6 +1,6 @@
 # Bible and Conflict of the Ages
 
-A standalone Expo app by Try Jesus Media. It follows the entire Bible alongside the five-volume *Conflict of the Ages* set and shares a reader's place, completion state, Journey Points, private welcome name, and public random alias with the existing website.
+A standalone Expo app by Try Jesus Media. It follows the entire Bible alongside the five-volume *Conflict of the Ages* set and shares a reader's place, completion state, Journey Points, private welcome name, and customizable public leaderboard name with the existing website.
 
 ## App identity
 
@@ -30,7 +30,7 @@ Google OAuth must allow `bibleandconflict://auth/callback` in Supabase Authentic
 - Primary item progress plan: `bible-conflict-ages-chapters-v1`
 - Primary table: `reading_plan_progress`
 - Website compatibility tables: `conflict_journey_settings` and `conflict_reading_progress`
-- Profile RPCs: `ensure_journey_profile`, `reroll_journey_alias`, `get_my_journey_first_name`, `update_my_journey_first_name`
+- Profile RPCs: `ensure_journey_profile`, `update_journey_alias`, `get_my_journey_first_name`, `update_my_journey_first_name`
 - Leaderboard RPC: `get_conflict_journey_leaderboard`
 - Rewards: 10 points per distinct item across indexes 0–1695
 

@@ -33,13 +33,15 @@ assert.deepEqual(Object.keys(rows[1]).sort(), ['rank', 'alias', 'journeyPoints',
 const component = await readFile(new URL('../components/ConflictLeaderboard.tsx', import.meta.url), 'utf8');
 const service = await readFile(new URL('../lib/conflictRewards.ts', import.meta.url), 'utf8');
 assert.match(service, /ensure_journey_profile/u);
-assert.match(service, /reroll_journey_alias/u);
+assert.match(service, /update_journey_alias/u);
 assert.match(service, /get_conflict_journey_leaderboard/u);
 assert.match(service, /get_my_journey_first_name/u);
 assert.match(service, /update_my_journey_first_name/u);
 assert.match(component, /delayLongPress=\{1400\}/u);
 assert.match(component, /now - lastTap\.current <= 450/u);
-assert.match(component, />Change alias</u);
+assert.match(component, /now - lastAliasTap\.current <= 450/u);
+assert.doesNotMatch(component, />Change alias</u);
+assert.match(component, /accessibilityState=\{\{ expanded: leaderboardOpen \}\}/u);
 assert.doesNotMatch(component, /RefreshControl|Refresh leaderboard|Your community alias/iu);
 assert.match(component, /useFocusEffect/u);
 assert.match(component, /AppState\.addEventListener/u);

@@ -147,7 +147,7 @@ function JourneyView() {
           />
         ))}
       </View>
-      <Text style={styles.privateNote}>Your reading progress remains private. Only a random alias and reading totals appear on the leaderboard.</Text>
+      <Text style={styles.privateNote}>Your reading progress remains private. Only your chosen leaderboard name and reading totals appear publicly.</Text>
       <Text style={styles.srSummary}>{completed.size} reading items complete.</Text>
     </View>
   );

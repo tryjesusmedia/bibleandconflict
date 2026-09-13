@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  changeConflictAlias,
+  updateConflictAlias,
   ensureConflictAlias,
   getConflictFirstName,
   updateConflictFirstName,
@@ -63,12 +63,16 @@ export function useConflictIdentity(userId?: string) {
     return saved;
   }, [userId]);
 
-  const rerollAlias = useCallback(async () => {
+  const saveAlias = useCallback(async (value: string) => {
+    const clean = value.trim().replace(/\s+/g, ' ');
+    if (clean.length < 3 || clean.length > 40 || /[<>\u0000-\u001F\u007F]/.test(clean)) {
+      throw new Error('Enter a leaderboard name between 3 and 40 characters.');
+    }
     const request = generation.current;
-    const saved = await changeConflictAlias();
+    const saved = await updateConflictAlias(clean);
     if (request === generation.current && userId) setAlias(saved);
     return saved;
   }, [userId]);
 
-  return { alias, firstName, loading, error, refresh, saveFirstName, rerollAlias };
+  return { alias, firstName, loading, error, refresh, saveFirstName, saveAlias };
 }
