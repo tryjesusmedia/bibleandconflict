@@ -9,7 +9,7 @@ A standalone Expo app by Try Jesus Media. It follows the entire Bible alongside 
 - URL scheme: `bibleandconflict`
 - Android package: `com.tryjesusmedia.bibleandconflict`
 - iOS bundle ID: `com.tryjesusmedia.bibleandconflict`
-- Prepared update: `1.0.3` (Android `versionCode` 4 / iOS `buildNumber` 3). Android build 4 is signed; Google Play submission is pending.
+- Prepared update: `1.0.3` (Android `versionCode` 4 / iOS `buildNumber` 3). The replacement Android build 4 with the reading-completion update is signed; Google Play upload is pending.
 - Expo owner: `try-jesus-media`
 
 This app has its own EAS project (`fa359745-0c6d-41ca-adb4-444b4417d73e`) and Supabase project. Signing files, service-account keys, `.env`, and `node_modules` do not belong in git.
@@ -47,7 +47,7 @@ After the app is approved locally:
 1. Complete the account-separation cutover checks in `ops/account-separation.md`.
 2. Keep the existing standalone EAS project ID; build from the reviewed commit.
 3. Verify the Supabase redirect allow-list contains `bibleandconflict://auth/callback` and test Google sign-in, sign-out, first-link migration, and account deletion on a release build.
-4. Use the existing Google Play listing for `com.tryjesusmedia.bibleandconflict` under Try Jesus Media (developer account `5712654634415606173`, app `4976442224378840807`). Do not create a duplicate app. Production was verified at 1.0.1 / build 2 on September 18. Build 4 is available from the [signed release workflow](https://github.com/tryjesusmedia/tryjesusjourney/actions/runs/35373377612). Automatic submission stopped because this app has no Google Play service-account key configured in EAS. Upload the AAB through the existing listing's Production release flow, or configure the authorized submission credential and submit that same bundle without rebuilding.
+4. Use the existing Google Play listing for `com.tryjesusmedia.bibleandconflict` under Try Jesus Media (developer account `5712654634415606173`, app `4976442224378840807`). Do not create a duplicate app. Production was verified at 1.0.1 / build 2 on September 18. Use only the replacement bundle from [release run 35378323553](https://github.com/tryjesusmedia/tryjesusjourney/actions/runs/35378323553), built from `14f183fc3532f3127dec634a183e50ae6e4061f3`. The earlier run 35373377612 bundle is superseded and lacks the requested completion-screen changes. EAS has no Play service-account key configured, and the attempted browser upload was denied by permission policy. No bundle was uploaded or submitted for review. The owner can manually upload the replacement into the prepared Production draft (release 3). See the cutover runbook for the latest build and submission status.
 5. For iOS, register the matching bundle ID and create the App Store Connect record before the first iOS build.
 
 Do not reuse the Try Jesus Journey app's signing credentials, EAS project ID, Play listing, or update channel.
