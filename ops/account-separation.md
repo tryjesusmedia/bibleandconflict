@@ -1,6 +1,10 @@
 # Separate ChronBible and Bible & Conflict accounts
 
-Status on 2026-09-18: **independent backend populated; website cutover ready**. Google provider and return URLs were saved by the owner, and the preview's OAuth redirect reaches Google's account chooser. Final signed-in callback and installed-app checks still need completion.
+Status on 2026-09-18: **website separation is live; Android update built, store submission blocked**. Website PR #35 deployed successfully as `2916c6a9638ca2516acfa3e593a227c9c505cdee`. Google provider and return URLs were saved by the owner, and OAuth reaches Google's account chooser. Final signed-in callback and installed-app checks still need completion.
+
+Android 1.0.3 / build 4 was signed successfully from merged app commit `1b19896a79512b4c44e7a77bdc6645725f88e152` in [release run 35373377612](https://github.com/tryjesusmedia/tryjesusjourney/actions/runs/35373377612). Every source gate passed, including the full app suite, website-plan parity, auth callbacks, account isolation, TypeScript, and lint. Artifact `bible-and-conflict-android-4` (ID `10560106175`) is retained through October 2, 2026. The ZIP SHA-256 is `4ab3b9b7a48c8533b29dab12c2b7b240052c7c70f990ee8c70e0bd2362355087`.
+
+EAS uploaded the bundle but stopped before Google Play submission: `Google Service Account Keys cannot be set up in --non-interactive mode.` No store review was started. The publisher's existing Play Console account was verified and showed production 1.0.1 / build 2 at 100% with no unpublished changes; browser control subsequently became unavailable, preventing manual upload. Use the already-built AAB for the remaining production submission, not a new build. Production target is configured explicitly in `eas.json`.
 
 ## Project boundary
 
