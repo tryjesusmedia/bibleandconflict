@@ -9,7 +9,7 @@ A standalone Expo app by Try Jesus Media. It follows the entire Bible alongside 
 - URL scheme: `bibleandconflict`
 - Android package: `com.tryjesusmedia.bibleandconflict`
 - iOS bundle ID: `com.tryjesusmedia.bibleandconflict`
-- Prepared update: `1.0.5` (Android `versionCode` 6 / iOS `buildNumber` 5), using the supplied shiny lion-and-lamb app icon and retaining the reading badges. The replacement signed bundle is being prepared; Google Play upload remains pending.
+- Prepared update: `1.0.5` (Android `versionCode` 6 / iOS `buildNumber` 5), using the supplied shiny lion-and-lamb app icon and retaining the reading badges. The replacement Android bundle is signed and verified; Google Play upload remains pending.
 - Expo owner: `try-jesus-media`
 
 This app has its own EAS project (`fa359745-0c6d-41ca-adb4-444b4417d73e`) and Supabase project. Signing files, service-account keys, `.env`, and `node_modules` do not belong in git.
@@ -59,7 +59,7 @@ After the app is approved locally:
 1. Complete the account-separation cutover checks in `ops/account-separation.md`.
 2. Keep the existing standalone EAS project ID; build from the reviewed commit.
 3. Verify the Supabase redirect allow-list contains `bibleandconflict://auth/callback` and test Google sign-in, sign-out, first-link migration, and account deletion on a release build.
-4. Use the existing Google Play listing for `com.tryjesusmedia.bibleandconflict` under Try Jesus Media (developer account `5712654634415606173`, app `4976442224378840807`). Do not create a duplicate app. Production was verified at 1.0.1 / build 2 on September 18. Use the badge bundle from [release run 35384519061](https://github.com/tryjesusmedia/tryjesusjourney/actions/runs/35384519061), built from `e71e59ad2e1ee1af339e8a56093b238382725a9e`. Earlier build 4 artifacts are superseded and do not include reading badges. Google Play upload remains pending: the prior browser upload was denied by permission policy, and no new upload or review was started. The owner can manually upload the signed badge bundle into the existing Production draft (release 3). See `ops/account-separation.md` for verified build status and checksums.
+4. Use the existing Google Play listing for `com.tryjesusmedia.bibleandconflict` under Try Jesus Media (developer account `5712654634415606173`, app `4976442224378840807`). Do not create a duplicate app. Production was verified at 1.0.1 / build 2 on September 18. Use the new-icon bundle from [release run 35390940684](https://github.com/tryjesusmedia/tryjesusjourney/actions/runs/35390940684), built from `b6b935bbc5d933496edafb32e9e2b6aca707f4a6`. Earlier build 5 and build 4 artifacts are superseded and do not include the newly supplied shiny icon. Google Play upload remains pending after the earlier browser permission denial. Production draft release 3 is saved as `1.0.5 — New icon, reading badges and sync`, with matching notes. The owner can manually upload the signed build 6 bundle there. See `ops/account-separation.md` for verified build status and checksums.
 5. For iOS, register the matching bundle ID and create the App Store Connect record before the first iOS build.
 
 Do not reuse the Try Jesus Journey app's signing credentials, EAS project ID, Play listing, or update channel.
