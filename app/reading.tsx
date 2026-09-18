@@ -12,6 +12,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountMenu } from '@/components/AccountMenu';
+import { ReadingBadgeButton } from '@/components/ReadingBadges';
 import { Card, Eyebrow } from '@/components/ui';
 import { colors, radius } from '@/constants/theme';
 import { useConflictJourney } from '@/contexts/ConflictJourneyContext';
@@ -195,7 +196,10 @@ export default function ReadingScreen() {
       <ScrollView contentContainerStyle={[styles.scrollContent, { paddingBottom: Math.max(insets.bottom + 30, 44) }]} showsVerticalScrollIndicator={false}>
         <View style={styles.readingHero}>
           <Eyebrow>{reading.commentaryBook}</Eyebrow>
-          <Text style={styles.title}>{reading.title}</Text>
+          <View style={styles.readingTitleRow}>
+            <Text style={[styles.title, styles.readingTitleCopy]}>{reading.title}</Text>
+            {readingComplete ? <ReadingBadgeButton reading={reading} /> : null}
+          </View>
           <Text style={styles.reference}>{reading.bibleReference}</Text>
           <View style={styles.itemProgress}>
             <View style={styles.itemTrack}><View style={[styles.itemFill, { width: `${allTasks.length ? done / allTasks.length * 100 : 0}%` }]} /></View>
@@ -267,6 +271,8 @@ const styles = StyleSheet.create({
   headerTitle: { color: colors.ivory, fontSize: 18, lineHeight: 23, fontWeight: '900' },
   scrollContent: { paddingHorizontal: 17, paddingTop: 25, gap: 28 },
   readingHero: { gap: 8 },
+  readingTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  readingTitleCopy: { flex: 1, minWidth: 0 },
   title: { color: colors.ivory, fontSize: 34, lineHeight: 41, fontWeight: '900' },
   reference: { color: colors.gold, fontSize: 20, lineHeight: 27, fontWeight: '800' },
   itemProgress: { marginTop: 8, gap: 7 },

@@ -14,6 +14,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountMenu } from '@/components/AccountMenu';
 import { ConflictLeaderboard } from '@/components/ConflictLeaderboard';
+import { EarnedReadingBadges } from '@/components/ReadingBadges';
 import { Card, Eyebrow, GoldButton } from '@/components/ui';
 import { FAITHCRAFT_URL } from '@/constants/links';
 import { colors, radius } from '@/constants/theme';
@@ -164,6 +165,7 @@ function ProgressView({ showLeaderboard }: { showLeaderboard: () => void }) {
         <Eyebrow>YOUR READING JOURNEY</Eyebrow>
         <Text style={styles.viewTitle}>Progress</Text>
       </View>
+      <EarnedReadingBadges />
       <View style={styles.statGrid}>
         <View style={styles.statCard}><Text style={styles.statNumber}>{Math.round((readingsComplete / conflictPlan.readings.length) * 100)}%</Text><Text style={styles.statLabel}>Journey complete</Text></View>
         <View style={styles.statCard}><Text style={styles.statNumber}>{readingsComplete}</Text><Text style={styles.statLabel}>Complete readings</Text></View>

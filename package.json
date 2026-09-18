@@ -1,6 +1,6 @@
 {
   "name": "bible-and-conflict-of-the-ages",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
@@ -15,9 +15,10 @@
     "test:rewards": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/test-conflict-rewards.mjs",
     "test:ui": "node scripts/test-ui-contract.mjs",
     "test:site-parity": "node scripts/test-site-parity.mjs",
-    "test": "npm run test:plan && npm run test:bible && npm run test:progress && npm run test:rewards && npm run test:ui && npm run test:site-parity",
+    "test": "npm run test:plan && npm run test:bible && npm run test:progress && npm run test:rewards && npm run test:ui && npm run test:site-parity && npm run test:badges",
     "test:auth-callback": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/test-auth-callback.mjs",
-    "test:account-isolation": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/test-account-isolation.mjs"
+    "test:account-isolation": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/test-account-isolation.mjs",
+    "test:badges": "node scripts/test-reading-badges.mjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
@@ -37,6 +38,7 @@
     "react-native": "0.86.3",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "4.26.0",
+    "react-native-svg": "15.15.4",
     "react-native-url-polyfill": "^2.0.0",
     "react-native-web": "~0.21.0",
     "react-native-webview": "13.16.1"
