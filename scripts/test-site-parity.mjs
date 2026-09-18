@@ -11,7 +11,9 @@ const manifest = JSON.parse(await readFile(resolve(root, 'data', 'siteParity.jso
 const localBytes = await readFile(localPlanPath);
 assert.equal(createHash('sha256').update(localBytes).digest('hex'), manifest.sha256);
 
-const siblingSite = resolve(root, '..', 'tjm-site', 'bibleandconflictoftheages');
+const siblingSite = process.env.TJM_SITE_ROOT
+  ? resolve(process.env.TJM_SITE_ROOT, 'bibleandconflictoftheages')
+  : resolve(root, '..', 'tjm-site', 'bibleandconflictoftheages');
 try {
   await access(resolve(siblingSite, 'data', 'readings.json'), constants.R_OK);
   const siteBytes = await readFile(resolve(siblingSite, 'data', 'readings.json'));
@@ -23,6 +25,6 @@ try {
   assert.match(siteRuntime, /prepareChapterProgressIndex/u);
   console.log('Checked-out website and native app plan/sync contract parity passed.');
 } catch (error) {
-  if (error?.code !== 'ENOENT') throw error;
+  if (error?.code !== 'ENOENT' || process.env.TJM_SITE_ROOT) throw error;
   console.log('Canonical website snapshot hash and documented sync contract passed (website checkout not present).');
 }
