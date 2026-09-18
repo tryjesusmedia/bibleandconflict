@@ -9,7 +9,7 @@ A standalone Expo app by Try Jesus Media. It follows the entire Bible alongside 
 - URL scheme: `bibleandconflict`
 - Android package: `com.tryjesusmedia.bibleandconflict`
 - iOS bundle ID: `com.tryjesusmedia.bibleandconflict`
-- Prepared update: `1.0.3` (Android `versionCode` 4 / iOS `buildNumber` 3). The replacement Android build 4 with the reading-completion update is signed; Google Play upload is pending.
+- Prepared update: `1.0.4` (Android `versionCode` 5 / iOS `buildNumber` 4), adding individually themed reading badges. The Android bundle is signed and its Play release draft is prepared; manual upload remains pending.
 - Expo owner: `try-jesus-media`
 
 This app has its own EAS project (`fa359745-0c6d-41ca-adb4-444b4417d73e`) and Supabase project. Signing files, service-account keys, `.env`, and `node_modules` do not belong in git.
@@ -40,6 +40,14 @@ Progress is currently stored as a full completion snapshot with one `updated_at`
 
 The dedicated Supabase project is `gabufylczphhykudwzbc` (Bible and Conflict). Its baseline migration is in this repository; do not apply it to the Journey project. The `delete-account` Edge Function refuses to run outside this project and verifies the user with Supabase Auth before deleting. Its service-role key stays server-side. See [the cutover runbook](ops/account-separation.md) before publishing these changes.
 
+## Reading badges
+
+All 264 readings have a unique labeled vector badge. Complete every assigned Scripture and companion item in a reading to earn it. Badges appear under Progress and beside the completed reading title; tapping expands the badge to a fullscreen viewer and tapping again shrinks it. Android Back and Close also dismiss the viewer; reduced motion is supported.
+
+Badges derive from the existing completion snapshot. Past completions earn badges automatically, unchecking an item removes that completed-reading badge, and account changes clear the viewer. No database migration or separate badge storage is needed. The standalone app and Conflict webpage award matching badges from matching synced progress.
+
+The canonical artwork and theme map live in `tryjesusmedia/tjm`: `scripts/reading-badge-art.cjs`, `scripts/reading-badge-themes.tsv`, and `scripts/build-reading-badges.mjs`. Run the generator with this app checkout as its argument to update both copies. Run `TJM_SITE_ROOT=/path/to/tjm npm run test:badges` to verify all designs and app/web parity.
+
 ## Release handoff
 
 After the app is approved locally:
@@ -47,7 +55,7 @@ After the app is approved locally:
 1. Complete the account-separation cutover checks in `ops/account-separation.md`.
 2. Keep the existing standalone EAS project ID; build from the reviewed commit.
 3. Verify the Supabase redirect allow-list contains `bibleandconflict://auth/callback` and test Google sign-in, sign-out, first-link migration, and account deletion on a release build.
-4. Use the existing Google Play listing for `com.tryjesusmedia.bibleandconflict` under Try Jesus Media (developer account `5712654634415606173`, app `4976442224378840807`). Do not create a duplicate app. Production was verified at 1.0.1 / build 2 on September 18. Use only the replacement bundle from [release run 35378323553](https://github.com/tryjesusmedia/tryjesusjourney/actions/runs/35378323553), built from `14f183fc3532f3127dec634a183e50ae6e4061f3`. The earlier run 35373377612 bundle is superseded and lacks the requested completion-screen changes. EAS has no Play service-account key configured, and the attempted browser upload was denied by permission policy. No bundle was uploaded or submitted for review. The owner can manually upload the replacement into the prepared Production draft (release 3). See the cutover runbook for the latest build and submission status.
+4. Use the existing Google Play listing for `com.tryjesusmedia.bibleandconflict` under Try Jesus Media (developer account `5712654634415606173`, app `4976442224378840807`). Do not create a duplicate app. Production was verified at 1.0.1 / build 2 on September 18. Use the badge bundle from [release run 35384519061](https://github.com/tryjesusmedia/tryjesusjourney/actions/runs/35384519061), built from `e71e59ad2e1ee1af339e8a56093b238382725a9e`. Earlier build 4 artifacts are superseded and do not include reading badges. Google Play upload remains pending: the prior browser upload was denied by permission policy, and no new upload or review was started. The owner can manually upload the signed badge bundle into the existing Production draft (release 3). See `ops/account-separation.md` for verified build status and checksums.
 5. For iOS, register the matching bundle ID and create the App Store Connect record before the first iOS build.
 
 Do not reuse the Try Jesus Journey app's signing credentials, EAS project ID, Play listing, or update channel.
