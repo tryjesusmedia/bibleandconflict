@@ -41,6 +41,8 @@ assert.match(component, /delayLongPress=\{1400\}/u);
 assert.match(component, /now - lastTap\.current <= 450/u);
 assert.match(component, /now - lastAliasTap\.current <= 450/u);
 assert.doesNotMatch(component, />Change alias</u);
+assert.match(component, />Change name</u);
+assert.match(component, /identity\.saveAlias\(aliasDraft\)/u, 'Change name must save the name entered by the user');
 assert.match(component, /accessibilityState=\{\{ expanded: leaderboardOpen \}\}/u);
 assert.doesNotMatch(component, /RefreshControl|Refresh leaderboard|Your community alias/iu);
 assert.match(component, /useFocusEffect/u);

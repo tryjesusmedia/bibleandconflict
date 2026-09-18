@@ -215,14 +215,14 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
                   <View style={styles.aliasLine}>{entry.isCurrentUser ? (
                     <Pressable
                       accessibilityRole="button"
-                      accessibilityLabel={`${entry.alias}. Double-tap or press and hold to change your leaderboard name.`}
+                      accessibilityLabel={`${entry.alias}. Change name.`}
                       delayLongPress={1400}
                       onLongPress={() => { aliasLongPressFired.current = true; openAliasEditor(); }}
                       onPress={handleAliasPress}
                       style={styles.aliasEdit}
                     >
                       <Text numberOfLines={2} style={styles.alias}>{entry.alias}</Text>
-                      <Text style={styles.aliasHint}>Double-tap or hold to edit</Text>
+                      <Text style={styles.aliasHint}>Change name</Text>
                     </Pressable>
                   ) : <Text numberOfLines={2} style={styles.alias}>{entry.alias}</Text>}
                     {entry.isCurrentUser ? <Text style={styles.you}>YOU</Text> : null}</View>

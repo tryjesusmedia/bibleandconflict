@@ -9,6 +9,16 @@ export const oauthRedirectUri = AuthSession.makeRedirectUri({
   path: 'auth/callback',
 });
 
+async function hasActiveSession(retries = 0) {
+  for (let attempt = 0; attempt <= retries; attempt += 1) {
+    const { data, error } = await supabase.auth.getSession();
+    if (error) throw error;
+    if (data.session) return true;
+    if (attempt < retries) await new Promise((resolve) => setTimeout(resolve, 180));
+  }
+  return false;
+}
+
 export async function signInWithGoogle() {
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
@@ -23,6 +33,11 @@ export async function signInWithGoogle() {
   const result = await WebBrowser.openAuthSessionAsync(data.url, oauthRedirectUri);
   if (result.type !== 'success') return false;
 
+  // Some Android browsers finish writing the Supabase session before the
+  // auth-session result reaches the app. Treat that completed sign-in as a
+  // success instead of trying to exchange the same callback a second time.
+  if (await hasActiveSession()) return true;
+
   const parsed = new URL(result.url);
   const code = parsed.searchParams.get('code');
   const flowId = parsed.searchParams.get('sb_flow_id');
@@ -31,7 +46,10 @@ export async function signInWithGoogle() {
       code,
       flowId ? { flowId } : undefined,
     );
-    if (exchangeError) throw exchangeError;
+    if (exchangeError) {
+      if (await hasActiveSession(3)) return true;
+      throw exchangeError;
+    }
     return true;
   }
 
@@ -43,8 +61,11 @@ export async function signInWithGoogle() {
       access_token: accessToken,
       refresh_token: refreshToken,
     });
-    if (sessionError) throw sessionError;
+    if (sessionError) {
+      if (await hasActiveSession(3)) return true;
+      throw sessionError;
+    }
     return true;
   }
-  return false;
+  return hasActiveSession(3);
 }

@@ -8,9 +8,8 @@ import {
 } from '@/data/conflictPlan';
 import { conflictLoadIdentity, isConflictLoadCurrent } from '@/lib/conflictProgressCore';
 import {
+  clearConflictDeviceData,
   loadConflictProgress,
-  prepareConflictDetach,
-  removeConflictAccountLocal,
   saveConflictProgress,
   syncConflictReadingAggregate,
   type ConflictProgress,
@@ -164,28 +163,35 @@ export function ConflictJourneyProvider({ children }: { children: React.ReactNod
   const disconnect = useCallback(async () => {
     if (!userId) return;
     setSyncState('syncing');
+    setError('');
     await saveQueue.current.drain();
-    const saved = await prepareConflictDetach(userId, true);
     await signOut();
-    progressRef.current = saved;
-    setProgress(saved);
+    const empty = await clearConflictDeviceData();
+    generation.current += 1;
+    mutationSequence.current += 1;
+    progressRef.current = empty;
+    setProgress(empty);
     setSyncState('local');
+    setReady(true);
   }, [signOut, userId]);
 
   const deleteAccount = useCallback(async () => {
     if (!userId) throw new Error('Sign in before deleting an account.');
     await saveQueue.current.drain();
-    const saved = await prepareConflictDetach(userId, true);
     const { data, error: functionError } = await supabase.functions.invoke('delete-account', {
       body: { confirmation: true },
     });
     if (functionError) throw functionError;
     if (!data || data.deleted !== true) throw new Error('The account deletion service did not confirm deletion.');
-    await removeConflictAccountLocal(userId);
     await signOut();
-    progressRef.current = saved;
-    setProgress(saved);
+    const empty = await clearConflictDeviceData();
+    generation.current += 1;
+    mutationSequence.current += 1;
+    progressRef.current = empty;
+    setProgress(empty);
+    setError('');
     setSyncState('local');
+    setReady(true);
   }, [signOut, userId]);
 
   const completed = useMemo(() => new Set(progress.completed), [progress.completed]);

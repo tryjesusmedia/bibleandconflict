@@ -7,20 +7,22 @@ const home = await readFile(new URL('../app/index.tsx', import.meta.url), 'utf8'
 const reading = await readFile(new URL('../app/reading.tsx', import.meta.url), 'utf8');
 const menu = await readFile(new URL('../components/AccountMenu.tsx', import.meta.url), 'utf8');
 const provider = await readFile(new URL('../contexts/ConflictJourneyContext.tsx', import.meta.url), 'utf8');
+const auth = await readFile(new URL('../lib/auth.ts', import.meta.url), 'utf8');
+const authProvider = await readFile(new URL('../contexts/AuthContext.tsx', import.meta.url), 'utf8');
 
 assert.equal(appConfig.name, 'Bible and Conflict of the Ages');
 assert.equal(appConfig.slug, 'bible-and-conflict-of-the-ages');
 assert.equal(appConfig.scheme, 'bibleandconflict');
 assert.equal(appConfig.owner, 'try-jesus-media');
-assert.equal(appConfig.version, '1.0.0');
+assert.equal(appConfig.version, '1.0.1');
 assert.equal(appConfig.android.package, 'com.tryjesusmedia.bibleandconflict');
-assert.equal(appConfig.android.versionCode, 1);
+assert.equal(appConfig.android.versionCode, 2);
 assert.equal(appConfig.android.softwareKeyboardLayoutMode, 'resize');
 assert.equal(appConfig.ios.bundleIdentifier, 'com.tryjesusmedia.bibleandconflict');
 assert.equal(appConfig.ios.buildNumber, '1');
 assert.equal(appConfig.extra.eas?.projectId, 'fa359745-0c6d-41ca-adb4-444b4417d73e', 'The standalone app must remain linked to its own EAS project');
 assert.equal(appConfig.updates?.url, undefined, 'A fresh app must not inherit another update channel');
-assert.equal(packageJson.version, '1.0.0');
+assert.equal(packageJson.version, '1.0.1');
 
 assert.match(home, /'journey' \| 'progress' \| 'leaderboard'/u);
 assert.match(home, /conflictPlan\.books\.map/u);
@@ -58,7 +60,11 @@ assert.match(menu, /Account deletion information/u);
 assert.match(menu, /Delete My Account and Data/u);
 assert.match(menu, /section === 'account' && session[^]*Delete My Account and Data/u, 'Deletion must render only inside Menu → Account & privacy');
 assert.match(menu, /shared Try Jesus account and synced data across Bible and Conflict of the Ages, Try Jesus: The Journey, and both website reading plans/u);
-assert.match(provider, /prepareConflictDetach\(userId, true\)/u);
+assert.match(menu, /deletes all Bible and Conflict reading progress, Journey Points, and other app data stored on this device/u);
+assert.match(authProvider, /signOut\(\{ scope: 'local' \}\)/u, 'Signing out must retain cloud account data while removing this device session');
+assert.match(auth, /hasActiveSession\(3\)/u, 'A completed Google sign-in must not show a false callback error while the session finishes persisting');
+assert.match(provider, /clearConflictDeviceData\(\)/u);
+assert.doesNotMatch(provider, /prepareConflictDetach/u);
 assert.match(provider, /functions\.invoke\('delete-account'/u);
 
 console.log('Standalone identity, senior-friendly journey UI, split reader links, settings, privacy, and account deletion passed.');

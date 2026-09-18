@@ -359,3 +359,10 @@ export async function removeConflictAccountLocal(userId: string) {
     ...(target === userId ? [GUEST_LINK_TARGET_KEY] : []),
   ]);
 }
+
+export async function clearConflictDeviceData() {
+  const keys = await AsyncStorage.getAllKeys();
+  const conflictKeys = keys.filter((key) => key.startsWith(`${BASE_LOCAL_KEY}:`));
+  if (conflictKeys.length) await AsyncStorage.multiRemove(conflictKeys);
+  return emptyConflictProgress();
+}

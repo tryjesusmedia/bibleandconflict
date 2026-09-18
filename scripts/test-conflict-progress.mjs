@@ -108,9 +108,11 @@ assert.match(store, /accountDataExisted \? newestISO\(settings\.updated_at, lega
 assert.match(store, /accountDataExisted: hasConflictAccountData\(canonicalProgress, settingIndex, legacyActivityExists\)/u, 'An empty website-created canonical row must not block first-link guest migration');
 assert.match(store, /hasConflictAccountData\(\s*null,\s*settingIndex,\s*legacyActivityExists/u, 'Only meaningful settings or legacy activity may block first-link guest migration');
 assert.match(store, /GUEST_LINK_TARGET_KEY/u);
-assert.match(store, /target === userId \? \[GUEST_LINK_TARGET_KEY\] : \[\]/u, 'Deleting an account must release its detached checkpoint so a future account can link local progress');
-assert.match(provider, /prepareConflictDetach\(userId, true\)[^]*signOut/u);
+assert.match(store, /getAllKeys\(\)[^]*startsWith\(`\$\{BASE_LOCAL_KEY\}:`\)[^]*multiRemove/u, 'Signing out or deleting an account must clear every Bible and Conflict progress snapshot on this device');
+assert.match(provider, /await saveQueue\.current\.drain\(\)[^]*await signOut\(\)[^]*await clearConflictDeviceData\(\)/u, 'Sign-out must finish queued cloud saves, end only the local session, then clear device progress');
+assert.doesNotMatch(provider, /prepareConflictDetach\(userId, true\)/u, 'Sign-out must not detach account progress into guest device storage');
 assert.match(provider, /body: \{ confirmation: true \}/u);
+assert.match(provider, /functions\.invoke\('delete-account'[^]*await signOut\(\)[^]*await clearConflictDeviceData\(\)/u, 'Account deletion must also clear Bible and Conflict device data');
 assert.match(provider, /isConflictLoadCurrent/u);
 assert.match(provider, /createSerialTaskQueue/u);
 assert.match(provider, /isLatestMutation/u);
@@ -118,4 +120,4 @@ assert.match(provider, /syncConflictReadingAggregate\(currentUserId, reading, ne
 assert.match(provider, /await saveQueue\.current\.enqueue\(runLoad\)/u, 'Foreground refreshes must be ordered after pending optimistic saves');
 assert.match(provider, /saveQueue\.current\.enqueue\(async \(\) => \{[^]*syncConflictReadingAggregate\(currentUserId, reading, currentCompleted, kind\)/u, 'Opening an external reading must use the same serial aggregate queue');
 
-console.log('Account isolation, first-link migration, dual-format website sync, detach, deletion, and auth-race checks passed.');
+console.log('Account isolation, first-link migration, dual-format website sync, device reset, deletion, and auth-race checks passed.');
