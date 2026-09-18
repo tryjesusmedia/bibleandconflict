@@ -42,6 +42,9 @@ Deno.serve(async (request) => {
   if (!supabaseUrl || !anonKey || !serviceRoleKey) {
     return json({ error: 'The deletion service is not configured.' }, 500);
   }
+  if (new URL(supabaseUrl).hostname !== 'gabufylczphhykudwzbc.supabase.co') {
+    return json({ error: 'This service can delete only Bible and Conflict accounts.' }, 503);
+  }
 
   const userClient = createClient(supabaseUrl, anonKey, {
     global: { headers: { Authorization: authorization } },
@@ -55,6 +58,9 @@ Deno.serve(async (request) => {
   const adminClient = createClient(supabaseUrl, serviceRoleKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
+  const token = authorization.replace(/^Bearer\s+/i, '');
+  const { error: signOutError } = await adminClient.auth.admin.signOut(token, 'global');
+  if (signOutError) return json({ error: 'The account sessions could not be closed. Please try again.' }, 500);
   const { error: deleteError } = await adminClient.auth.admin.deleteUser(user.id);
   if (deleteError) {
     console.error('Account deletion failed', { userId: user.id, message: deleteError.message });
