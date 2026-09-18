@@ -9,7 +9,7 @@ A standalone Expo app by Try Jesus Media. It follows the entire Bible alongside 
 - URL scheme: `bibleandconflict`
 - Android package: `com.tryjesusmedia.bibleandconflict`
 - iOS bundle ID: `com.tryjesusmedia.bibleandconflict`
-- Prepared update: `1.0.4` (Android `versionCode` 5 / iOS `buildNumber` 4), adding individually themed reading badges. The Android bundle is signed and its Play release draft is prepared; manual upload remains pending.
+- Prepared update: `1.0.5` (Android `versionCode` 6 / iOS `buildNumber` 5), using the supplied shiny lion-and-lamb app icon and retaining the reading badges. The replacement signed bundle is being prepared; Google Play upload remains pending.
 - Expo owner: `try-jesus-media`
 
 This app has its own EAS project (`fa359745-0c6d-41ca-adb4-444b4417d73e`) and Supabase project. Signing files, service-account keys, `.env`, and `node_modules` do not belong in git.
@@ -39,6 +39,10 @@ The task indexes intentionally reserve every supplied `legacyProgressIndex` befo
 Progress is currently stored as a full completion snapshot with one `updated_at` value. When two snapshots conflict, the newer snapshot wins so an intentional uncheck is not resurrected. Distinct offline additions cannot be safely unioned without also risking that data loss; conflict-free merging would require a future shared schema with per-item update/removal timestamps.
 
 The dedicated Supabase project is `gabufylczphhykudwzbc` (Bible and Conflict). Its baseline migration is in this repository; do not apply it to the Journey project. The `delete-account` Edge Function refuses to run outside this project and verifies the user with Supabase Auth before deleting. Its service-role key stays server-side. See [the cutover runbook](ops/account-separation.md) before publishing these changes.
+
+## App icon
+
+The launcher icon uses the owner-supplied `Lion and Lamb faithcraft shiny.png` (source SHA-256 `847e730af5705bff330a3e0301227b0ed525ecc07ab7536c531421876e3856b1`). Standard/iOS artwork is composited onto Midnight Navy in a 1024px opaque PNG. Android uses the same artwork centered in a transparent 1024px foreground with the configured Midnight Navy background; padding preserves the full logo under round and rounded launcher masks. Colors, lettering, and illustration are preserved.
 
 ## Reading badges
 
