@@ -1,6 +1,6 @@
 {
   "name": "bible-and-conflict-of-the-ages",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
@@ -15,7 +15,8 @@
     "test:rewards": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/test-conflict-rewards.mjs",
     "test:ui": "node scripts/test-ui-contract.mjs",
     "test:site-parity": "node scripts/test-site-parity.mjs",
-    "test": "npm run test:plan && npm run test:bible && npm run test:progress && npm run test:rewards && npm run test:ui && npm run test:site-parity"
+    "test": "npm run test:plan && npm run test:bible && npm run test:progress && npm run test:rewards && npm run test:ui && npm run test:site-parity",
+    "test:auth-callback": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --experimental-strip-types scripts/test-auth-callback.mjs"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
