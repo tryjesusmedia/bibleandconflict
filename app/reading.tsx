@@ -27,6 +27,38 @@ function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
 }
 
+const companionPageRangesByParagraphId: Record<number, string> = {
+  33: '15–22',
+  72: '25–34',
+  120: '35–50',
+  190: '51–60',
+  234: '61–74',
+  301: '75–86',
+  361: '87–98',
+  422: '99–108',
+  461: '109–116',
+  505: '119–128',
+  544: '129–142',
+  1237: '279–292',
+  1297: '293–300',
+  1332: '303–310',
+  1371: '311–321',
+  1417: '322–330',
+  1458: '331–339',
+  1495: '340–348',
+  1548: '349–366',
+};
+
+function companionPageLabel(reading: ConflictReading, taskIndex: number) {
+  const ranges = [...reading.commentaryCitation.matchAll(/\b(?:PP|PK|DA|AA|GC)\s+(\d+)(?:\s*[-–]\s*(\d+))?/giu)]
+    .map((match) => match[2] ? `${match[1]}–${match[2]}` : match[1]);
+  const task = reading.commentaryTasks[taskIndex];
+  const range = ranges.length === reading.commentaryTasks.length
+    ? ranges[taskIndex]
+    : ranges[0] ?? companionPageRangesByParagraphId[task.paragraphId];
+  return range ? ` · pp. ${range}` : '';
+}
+
 async function openExternal(url: string) {
   try {
     const supported = await Linking.canOpenURL(url);
@@ -71,7 +103,7 @@ function ScriptureTask({ reading, taskIndex }: { reading: ConflictReading; taskI
   };
 
   return (
-    <View style={styles.taskCard}>
+    <View style={[styles.taskCard, styles.scriptureTaskCard]}>
       <View style={styles.scriptureActions}>
         <Pressable accessibilityRole="button" onPress={readNative} style={({ pressed }) => [styles.nativeAction, pressed && styles.pressed]}>
           <Text style={styles.nativeReference}>{task.reference}</Text>
@@ -96,8 +128,9 @@ function CompanionTask({ reading, taskIndex }: { reading: ConflictReading; taskI
   const { completed, toggleTask, recordOpen } = useConflictJourney();
   const task = reading.commentaryTasks[taskIndex];
   const checked = completed.has(task.progressIndex);
+  const pageLabel = companionPageLabel(reading, taskIndex);
   return (
-    <View style={styles.taskCard}>
+    <View style={[styles.taskCard, styles.companionTaskCard]}>
       <Pressable
         accessibilityRole="link"
         onPress={() => { recordOpen(reading, 'commentary'); void openExternal(task.url); }}
@@ -105,7 +138,7 @@ function CompanionTask({ reading, taskIndex }: { reading: ConflictReading; taskI
       >
         <View style={styles.companionCopy}>
           <Text style={styles.companionTitle}>{task.title}</Text>
-          <Text style={styles.companionSource}>Read on EGW Writings</Text>
+          <Text style={styles.companionSource}>Read on EGW Writings{pageLabel}</Text>
         </View>
         <Text style={styles.externalMark}>↗</Text>
       </Pressable>
@@ -123,6 +156,7 @@ export default function ReadingScreen() {
   const index = reading ? conflictPlan.readings.indexOf(reading) : -1;
   const allTasks = useMemo(() => reading ? [...reading.bibleTasks, ...reading.commentaryTasks] : [], [reading]);
   const done = allTasks.filter((task) => completed.has(task.progressIndex)).length;
+  const readingComplete = reading ? conflictReadingComplete(reading, completed) : false;
 
   useEffect(() => {
     if (index >= 0) setReading(index);
@@ -170,28 +204,37 @@ export default function ReadingScreen() {
         </View>
 
         {reading.bibleTasks.length ? (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.scriptureSection]}>
             <View style={styles.sectionHeading}>
               <Text style={styles.step}>1</Text>
-              <View style={styles.sectionHeadingCopy}><Text style={styles.sectionTitle}>Begin with Scripture</Text><Text style={styles.sectionBody}>Tap the passage to read it inside the app in KJV or WEB.</Text></View>
+              <View style={styles.sectionHeadingCopy}><Text style={styles.sectionTitle}>Begin with Scripture</Text></View>
             </View>
             {reading.bibleTasks.map((_task, taskIndex) => <ScriptureTask key={_task.progressIndex} reading={reading} taskIndex={taskIndex} />)}
           </View>
         ) : null}
 
         {reading.commentaryTasks.length ? (
-          <View style={styles.section}>
+          <View style={[styles.section, styles.companionSection]}>
             <View style={styles.sectionHeading}>
               <Text style={styles.step}>2</Text>
-              <View style={styles.sectionHeadingCopy}><Text style={styles.sectionTitle}>Continue with the companion</Text><Text style={styles.sectionBody}>{reading.commentaryCitation}</Text></View>
+              <View style={styles.sectionHeadingCopy}><Text style={styles.sectionTitle}>Continue with the companion</Text></View>
             </View>
             {reading.commentaryTasks.map((_task, taskIndex) => <CompanionTask key={_task.progressIndex} reading={reading} taskIndex={taskIndex} />)}
           </View>
         ) : null}
 
-        <Card style={styles.completeCard}>
-          <Text style={styles.completeTitle}>{conflictReadingComplete(reading, completed) ? 'Reading complete ✓' : 'Complete each item when you finish.'}</Text>
-          <Text style={styles.completeBody}>Your next unfinished place will stay available on this device. Sign in only if you want it synced.</Text>
+        <Card style={[styles.completeCard, readingComplete ? styles.completeCardFinished : styles.completeCardPending]}>
+          {readingComplete ? (
+            <View style={styles.completeCelebration}>
+              <View style={styles.completeRule} />
+              <View style={styles.completeTitleRow}>
+                <Text style={styles.completeDecoration}>✦</Text>
+                <Text style={[styles.completeTitle, styles.completeTitleFinished]}>Reading complete</Text>
+                <Text style={styles.completeDecoration}>✦</Text>
+              </View>
+              <View style={styles.completeRule} />
+            </View>
+          ) : <Text style={styles.completeTitle}>Complete each item when you finish.</Text>}
         </Card>
 
         <View style={styles.navigation}>
@@ -230,13 +273,16 @@ const styles = StyleSheet.create({
   itemTrack: { height: 10, borderRadius: 5, overflow: 'hidden', backgroundColor: colors.panel2 },
   itemFill: { height: '100%', backgroundColor: colors.green, borderRadius: 5 },
   itemProgressText: { color: colors.muted, fontSize: 15, lineHeight: 21, fontWeight: '700' },
-  section: { gap: 14 },
+  section: { gap: 14, borderRadius: radius.lg, borderWidth: 1, padding: 16 },
+  scriptureSection: { backgroundColor: colors.scripturePanel, borderColor: 'rgba(97,198,169,0.34)' },
+  companionSection: { backgroundColor: colors.companionPanel, borderColor: 'rgba(161,142,214,0.38)' },
   sectionHeading: { flexDirection: 'row', alignItems: 'flex-start', gap: 13 },
   step: { width: 39, height: 39, borderRadius: 20, color: colors.navy, backgroundColor: colors.gold, textAlign: 'center', textAlignVertical: 'center', fontSize: 19, lineHeight: 39, fontWeight: '900', overflow: 'hidden' },
   sectionHeadingCopy: { flex: 1 },
   sectionTitle: { color: colors.ivory, fontSize: 25, lineHeight: 31, fontWeight: '900' },
-  sectionBody: { color: colors.muted, fontSize: 16, lineHeight: 24, marginTop: 4 },
   taskCard: { backgroundColor: colors.panel, borderWidth: 1, borderColor: colors.border, borderRadius: radius.md, overflow: 'hidden' },
+  scriptureTaskCard: { backgroundColor: '#0A2B3D', borderColor: 'rgba(97,198,169,0.3)' },
+  companionTaskCard: { backgroundColor: '#202039', borderColor: 'rgba(161,142,214,0.34)' },
   scriptureActions: { minHeight: 108, flexDirection: 'row', alignItems: 'stretch' },
   nativeAction: { flex: 1, minWidth: 0, justifyContent: 'center', padding: 15 },
   nativeReference: { color: colors.ivory, fontSize: 19, lineHeight: 25, fontWeight: '900' },
@@ -256,9 +302,15 @@ const styles = StyleSheet.create({
   companionCopy: { flex: 1 },
   companionTitle: { color: colors.ivory, fontSize: 18, lineHeight: 25, fontWeight: '900' },
   companionSource: { color: colors.gold, fontSize: 14, lineHeight: 21, fontWeight: '800', marginTop: 4 },
-  completeCard: { gap: 7 },
-  completeTitle: { color: colors.ivory, fontSize: 21, lineHeight: 28, fontWeight: '900' },
-  completeBody: { color: colors.muted, fontSize: 16, lineHeight: 24 },
+  completeCard: { minHeight: 98, alignItems: 'center', justifyContent: 'center' },
+  completeCardPending: { backgroundColor: colors.pendingPanel, borderColor: 'rgba(229,181,91,0.45)' },
+  completeCardFinished: { backgroundColor: colors.completePanel, borderWidth: 2, borderColor: colors.gold, shadowColor: colors.gold, shadowOpacity: 0.24, shadowRadius: 12, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
+  completeCelebration: { width: '100%', alignItems: 'center', gap: 10 },
+  completeTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+  completeRule: { width: '78%', height: 1, backgroundColor: colors.gold },
+  completeDecoration: { color: colors.gold, fontSize: 22, lineHeight: 28 },
+  completeTitle: { color: colors.ivory, fontSize: 21, lineHeight: 28, fontWeight: '900', textAlign: 'center' },
+  completeTitleFinished: { color: colors.gold, fontSize: 29, lineHeight: 36, fontWeight: '900', fontStyle: 'italic' },
   navigation: { flexDirection: 'row', gap: 12 },
   navButton: { flex: 1, minHeight: 98, borderRadius: radius.md, borderWidth: 1, borderColor: colors.gold, padding: 13, justifyContent: 'center' },
   nextButton: { alignItems: 'flex-end' },

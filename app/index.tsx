@@ -163,7 +163,6 @@ function ProgressView({ showLeaderboard }: { showLeaderboard: () => void }) {
       <View style={styles.viewHeading}>
         <Eyebrow>YOUR READING JOURNEY</Eyebrow>
         <Text style={styles.viewTitle}>Progress</Text>
-        <Text style={styles.viewDescription}>See the progress you have made through Scripture and all five companion volumes.</Text>
       </View>
       <View style={styles.statGrid}>
         <View style={styles.statCard}><Text style={styles.statNumber}>{Math.round((readingsComplete / conflictPlan.readings.length) * 100)}%</Text><Text style={styles.statLabel}>Journey complete</Text></View>
@@ -334,7 +333,7 @@ const styles = StyleSheet.create({
   viewHeading: { gap: 5 },
   viewTitle: { color: colors.ivory, fontSize: 36, lineHeight: 42, fontWeight: '900' },
   viewDescription: { color: colors.muted, fontSize: 18, lineHeight: 28 },
-  continueCard: { gap: 10 },
+  continueCard: { gap: 10, backgroundColor: colors.continuePanel, borderColor: colors.teal },
   continueLabel: { color: colors.gold, fontSize: 14, lineHeight: 20, letterSpacing: 1.3, fontWeight: '900' },
   continueTitle: { color: colors.ivory, fontSize: 25, lineHeight: 32, fontWeight: '900' },
   continueReference: { color: colors.muted, fontSize: 17, lineHeight: 24, marginBottom: 7 },

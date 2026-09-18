@@ -163,7 +163,6 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
             onPress={handleNamePress}
           >
             <Text style={styles.welcome}>Welcome, {identity.firstName}!</Text>
-            <Text style={styles.nameHint}>Double-tap or press and hold your name to change it.</Text>
           </Pressable>
         ) : <Text style={styles.welcome}>Welcome, Friend!</Text>}
         <Text style={styles.eyebrow}>YOUR JOURNEY POINTS</Text>
@@ -291,7 +290,6 @@ const styles = StyleSheet.create({
   body: { color: colors.muted, fontSize: 18, lineHeight: 27 },
   pointsCard: { borderRadius: radius.lg, padding: 22, backgroundColor: colors.tealDeep, borderWidth: 1, borderColor: colors.gold, gap: 8 },
   welcome: { color: colors.ivory, fontSize: 25, lineHeight: 31, fontWeight: '900', textDecorationLine: 'underline', textDecorationColor: colors.gold },
-  nameHint: { color: colors.muted, fontSize: 14, lineHeight: 20, marginTop: 4 },
   points: { color: colors.ivory, fontSize: 52, lineHeight: 59, fontWeight: '900', marginVertical: 2 },
   track: { width: '100%', height: 12, borderRadius: 6, overflow: 'hidden', backgroundColor: 'rgba(1,12,24,0.5)', marginTop: 10 },
   fill: { height: '100%', borderRadius: 6, backgroundColor: colors.gold },

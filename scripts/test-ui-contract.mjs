@@ -18,7 +18,7 @@ assert.equal(appConfig.android.versionCode, 1);
 assert.equal(appConfig.android.softwareKeyboardLayoutMode, 'resize');
 assert.equal(appConfig.ios.bundleIdentifier, 'com.tryjesusmedia.bibleandconflict');
 assert.equal(appConfig.ios.buildNumber, '1');
-assert.equal(appConfig.extra.eas?.projectId, undefined, 'A fresh app must not inherit another EAS project');
+assert.equal(appConfig.extra.eas?.projectId, 'fa359745-0c6d-41ca-adb4-444b4417d73e', 'The standalone app must remain linked to its own EAS project');
 assert.equal(appConfig.updates?.url, undefined, 'A fresh app must not inherit another update channel');
 assert.equal(packageJson.version, '1.0.0');
 
@@ -38,6 +38,15 @@ assert.ok(nativePosition >= 0 && nativePosition < dividerPosition && dividerPosi
 assert.match(reading, /pathname: '\/bible-reader'/u);
 assert.match(reading, /translation: 'KJV'/u);
 assert.match(reading, /Read on EGW Writings/u);
+assert.match(reading, /companionPageLabel/u);
+assert.match(reading, /companionPageRangesByParagraphId/u);
+assert.match(reading, /scriptureSection/u);
+assert.match(reading, /companionSection/u);
+assert.match(reading, /completeCardFinished/u);
+assert.match(reading, /completeTitleFinished/u);
+assert.doesNotMatch(reading, /Tap the passage to read it inside the app|Your next unfinished place will stay available/u);
+assert.doesNotMatch(home, /See the progress you have made through Scripture/u);
+assert.doesNotMatch(await readFile(new URL('../components/ConflictLeaderboard.tsx', import.meta.url), 'utf8'), /<Text style=\{styles\.nameHint\}>/u);
 assert.match(reading, /router\.replace\(\{ pathname: '\/reading'/u, 'Previous and next navigation must update the saved reading route');
 assert.doesNotMatch(`${home}\n${reading}`, /principle|highlight|my notes|notes button/iu);
 
