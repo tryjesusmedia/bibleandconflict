@@ -3,13 +3,13 @@ import { Platform } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { createClient } from '@supabase/supabase-js';
+import { conflictBackend } from '@/lib/conflictBackend';
 
-const url = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
-const key = process.env.EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? '';
-
-if (!url || !key) {
-  console.warn('Supabase environment variables are missing.');
-}
+// Deliberately ignore the old shared EXPO_PUBLIC_SUPABASE_* build variables.
+const { url, key, storageKey } = conflictBackend(
+  process.env.EXPO_PUBLIC_CONFLICT_SUPABASE_URL,
+  process.env.EXPO_PUBLIC_CONFLICT_SUPABASE_PUBLISHABLE_KEY,
+);
 
 const storage = Platform.OS === 'web'
   ? {
@@ -26,6 +26,7 @@ const storage = Platform.OS === 'web'
 export const supabase = createClient(url, key, {
   auth: {
     storage,
+    storageKey,
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,

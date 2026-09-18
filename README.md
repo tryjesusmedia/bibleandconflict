@@ -9,16 +9,16 @@ A standalone Expo app by Try Jesus Media. It follows the entire Bible alongside 
 - URL scheme: `bibleandconflict`
 - Android package: `com.tryjesusmedia.bibleandconflict`
 - iOS bundle ID: `com.tryjesusmedia.bibleandconflict`
-- Version: `1.0.0` (`versionCode`/`buildNumber` 1)
+- Next version: `1.0.3` (Android `versionCode` 4 / iOS `buildNumber` 3)
 - Expo owner: `try-jesus-media`
 
-This repository deliberately contains no `.git` history from another app, EAS project ID, update URL, signing file, service-account key, `.env`, or `node_modules`. Create the remote and EAS project only after confirming that the final package identifiers are available.
+This app has its own EAS project (`fa359745-0c6d-41ca-adb4-444b4417d73e`) and Supabase project. Signing files, service-account keys, `.env`, and `node_modules` do not belong in git.
 
 ## Local setup
 
-1. Copy `.env.example` to `.env.local`.
-2. Add the same public Supabase URL and publishable/anonymous key used by `tryjesusmedia.com`. Never put the service-role key in the app.
-3. Run `npm install`.
+1. Production public configuration is in `lib/conflictBackend.ts`; no secret is required to build.
+2. For a separate staging project, copy `.env.example` to `.env.local` and use `EXPO_PUBLIC_CONFLICT_SUPABASE_*`. Legacy `EXPO_PUBLIC_SUPABASE_*` variables are deliberately ignored. The Journey project is rejected. Never put a service-role key in the app.
+3. Run `npm ci`.
 4. Run `npm test`, `npm run typecheck`, and `npm run lint`.
 5. Run `npx expo start` to test on a device or simulator.
 
@@ -38,14 +38,14 @@ The task indexes intentionally reserve every supplied `legacyProgressIndex` befo
 
 Progress is currently stored as a full completion snapshot with one `updated_at` value. When two snapshots conflict, the newer snapshot wins so an intentional uncheck is not resurrected. Distinct offline additions cannot be safely unioned without also risking that data loss; conflict-free merging would require a future shared schema with per-item update/removal timestamps.
 
-The existing shared Supabase project must already contain the tables/RPCs above and the deployed `delete-account` function. A reviewed copy of that Edge Function is included under `supabase/functions/delete-account`; deployment requires the project's service-role secret and must be done from a trusted operator environment, never from the mobile app.
+The dedicated Supabase project is `gabufylczphhykudwzbc` (Bible and Conflict). Its baseline migration is in this repository; do not apply it to the Journey project. The `delete-account` Edge Function refuses to run outside this project and verifies the user with Supabase Auth before deleting. Its service-role key stays server-side. See [the cutover runbook](ops/account-separation.md) before publishing these changes.
 
 ## Release handoff
 
 After the app is approved locally:
 
-1. Create the empty GitHub repository `tryjesusmedia/bibleandconflict`, then add it as this repository's remote and push `main`.
-2. Run `eas init` while signed in to the `try-jesus-media` Expo organization; verify the generated project belongs to this app before committing its EAS project ID.
+1. Complete the account-separation cutover checks in `ops/account-separation.md`.
+2. Keep the existing standalone EAS project ID; build from the reviewed commit.
 3. Verify the Supabase redirect allow-list contains `bibleandconflict://auth/callback` and test Google sign-in, sign-out, first-link migration, and account deletion on a release build.
 4. Create a new Google Play app, reserve `com.tryjesusmedia.bibleandconflict`, create/upload an Android App Bundle, complete the Data safety/App access/content declarations and store listing, test in a closed track, then promote to production.
 5. For iOS, register the matching bundle ID and create the App Store Connect record before the first iOS build.

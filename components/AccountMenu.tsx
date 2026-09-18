@@ -53,7 +53,7 @@ export function AccountMenu() {
   const confirmDelete = () => {
     Alert.alert(
       'Delete My Account and Data?',
-      'This permanently deletes your shared Try Jesus account and synced data across Bible and Conflict of the Ages, Try Jesus: The Journey, and both website reading plans. It also deletes all Bible and Conflict reading progress, Journey Points, and other app data stored on this device.',
+      'This permanently deletes your Bible and Conflict account and its synced data in this app and the Bible and Conflict website reader. It also deletes all Bible and Conflict reading progress, Journey Points, and other app data stored on this device. Your ChronBible and Try Jesus: The Journey account stays separate.',
       [
         { text: 'Cancel', style: 'cancel' },
         { text: 'Delete My Account and Data', style: 'destructive', onPress: () => void run(deleteAccount) },
@@ -127,7 +127,7 @@ export function AccountMenu() {
                 <Text style={styles.deleteText}>Delete My Account and Data</Text>
               </Pressable>
             ) : null}
-            <Text style={styles.note}>{section === 'menu' ? 'Google sign-in is optional. It is used only to save and sync your journey.' : 'Your Try Jesus account is shared by both apps and the website reading plans.'}</Text>
+            <Text style={styles.note}>{section === 'menu' ? 'Google sign-in is optional. It is used only to save and sync your journey.' : 'This account syncs only with Bible and Conflict. Sign in separately to use ChronBible or Try Jesus: The Journey.'}</Text>
           </View>
         </View>
       </Modal>
