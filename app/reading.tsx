@@ -107,7 +107,7 @@ function ScriptureTask({ reading, taskIndex }: { reading: ConflictReading; taskI
       <View style={styles.scriptureActions}>
         <Pressable accessibilityRole="button" onPress={readNative} style={({ pressed }) => [styles.nativeAction, pressed && styles.pressed]}>
           <Text style={styles.nativeReference}>{task.reference}</Text>
-          <Text style={styles.nativeHint}>Read in the app · KJV or WEB</Text>
+          <Text style={styles.nativeHint}>Read in the app</Text>
         </Pressable>
         <View style={styles.verticalDivider} />
         <Pressable
@@ -223,9 +223,9 @@ export default function ReadingScreen() {
           </View>
         ) : null}
 
-        <Card style={[styles.completeCard, readingComplete ? styles.completeCardFinished : styles.completeCardPending]}>
-          {readingComplete ? (
-            <View style={styles.completeCelebration}>
+        {readingComplete ? (
+          <Card style={[styles.completeCard, styles.completeCardFinished]}>
+            <View accessibilityLiveRegion="polite" style={styles.completeCelebration}>
               <View style={styles.completeRule} />
               <View style={styles.completeTitleRow}>
                 <Text style={styles.completeDecoration}>✦</Text>
@@ -234,8 +234,8 @@ export default function ReadingScreen() {
               </View>
               <View style={styles.completeRule} />
             </View>
-          ) : <Text style={styles.completeTitle}>Complete each item when you finish.</Text>}
-        </Card>
+          </Card>
+        ) : null}
 
         <View style={styles.navigation}>
           <Pressable accessibilityRole="button" disabled={index === 0} onPress={() => navigate(index - 1)} style={[styles.navButton, index === 0 && styles.disabled]}>
@@ -303,14 +303,13 @@ const styles = StyleSheet.create({
   companionTitle: { color: colors.ivory, fontSize: 18, lineHeight: 25, fontWeight: '900' },
   companionSource: { color: colors.gold, fontSize: 14, lineHeight: 21, fontWeight: '800', marginTop: 4 },
   completeCard: { minHeight: 98, alignItems: 'center', justifyContent: 'center' },
-  completeCardPending: { backgroundColor: colors.pendingPanel, borderColor: 'rgba(229,181,91,0.45)' },
-  completeCardFinished: { backgroundColor: colors.completePanel, borderWidth: 2, borderColor: colors.gold, shadowColor: colors.gold, shadowOpacity: 0.24, shadowRadius: 12, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
+  completeCardFinished: { backgroundColor: colors.tealDeep, borderWidth: 2, borderColor: colors.goldDeep, shadowColor: colors.navy, shadowOpacity: 0.24, shadowRadius: 12, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
   completeCelebration: { width: '100%', alignItems: 'center', gap: 10 },
   completeTitleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-  completeRule: { width: '78%', height: 1, backgroundColor: colors.gold },
-  completeDecoration: { color: colors.gold, fontSize: 22, lineHeight: 28 },
+  completeRule: { width: '78%', height: 1, backgroundColor: colors.goldDeep },
+  completeDecoration: { color: colors.goldDeep, fontSize: 22, lineHeight: 28 },
   completeTitle: { color: colors.ivory, fontSize: 21, lineHeight: 28, fontWeight: '900', textAlign: 'center' },
-  completeTitleFinished: { color: colors.gold, fontSize: 29, lineHeight: 36, fontWeight: '900', fontStyle: 'italic' },
+  completeTitleFinished: { flexShrink: 1, color: colors.paper, fontSize: 29, lineHeight: 36, fontWeight: '900', fontStyle: 'italic' },
   navigation: { flexDirection: 'row', gap: 12 },
   navButton: { flex: 1, minHeight: 98, borderRadius: radius.md, borderWidth: 1, borderColor: colors.gold, padding: 13, justifyContent: 'center' },
   nextButton: { alignItems: 'flex-end' },
