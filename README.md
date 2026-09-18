@@ -9,7 +9,7 @@ A standalone Expo app by Try Jesus Media. It follows the entire Bible alongside 
 - URL scheme: `bibleandconflict`
 - Android package: `com.tryjesusmedia.bibleandconflict`
 - iOS bundle ID: `com.tryjesusmedia.bibleandconflict`
-- Next version: `1.0.3` (Android `versionCode` 4 / iOS `buildNumber` 3)
+- Prepared update: `1.0.3` (Android `versionCode` 4 / iOS `buildNumber` 3). Android build 4 is signed; Google Play submission is pending.
 - Expo owner: `try-jesus-media`
 
 This app has its own EAS project (`fa359745-0c6d-41ca-adb4-444b4417d73e`) and Supabase project. Signing files, service-account keys, `.env`, and `node_modules` do not belong in git.
@@ -47,7 +47,7 @@ After the app is approved locally:
 1. Complete the account-separation cutover checks in `ops/account-separation.md`.
 2. Keep the existing standalone EAS project ID; build from the reviewed commit.
 3. Verify the Supabase redirect allow-list contains `bibleandconflict://auth/callback` and test Google sign-in, sign-out, first-link migration, and account deletion on a release build.
-4. Create a new Google Play app, reserve `com.tryjesusmedia.bibleandconflict`, create/upload an Android App Bundle, complete the Data safety/App access/content declarations and store listing, test in a closed track, then promote to production.
+4. Use the existing Google Play listing for `com.tryjesusmedia.bibleandconflict` under Try Jesus Media (developer account `5712654634415606173`, app `4976442224378840807`). Do not create a duplicate app. Production was verified at 1.0.1 / build 2 on September 18. Build 4 is available from the [signed release workflow](https://github.com/tryjesusmedia/tryjesusjourney/actions/runs/35373377612). Automatic submission stopped because this app has no Google Play service-account key configured in EAS. Upload the AAB through the existing listing's Production release flow, or configure the authorized submission credential and submit that same bundle without rebuilding.
 5. For iOS, register the matching bundle ID and create the App Store Connect record before the first iOS build.
 
 Do not reuse the Try Jesus Journey app's signing credentials, EAS project ID, Play listing, or update channel.
