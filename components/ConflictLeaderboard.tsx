@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
   KeyboardAvoidingView,
@@ -33,32 +33,18 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
   const [savingAlias, setSavingAlias] = useState(false);
   const [leaderboardOpen, setLeaderboardOpen] = useState(false);
   const [signInBusy, setSignInBusy] = useState(false);
-  const lastTap = useRef(0);
-  const longPressFired = useRef(false);
   const openNameEditor = () => {
-    if (!userId) return;
-    setNameDraft(identity.firstName);
+    if (!userId || savingName) return;
+    setNameDraft(identity.alias || '');
     setNameOpen(true);
-  };
-
-  const handleNamePress = () => {
-    if (longPressFired.current) {
-      longPressFired.current = false;
-      return;
-    }
-    const now = Date.now();
-    if (now - lastTap.current <= 450) {
-      lastTap.current = 0;
-      openNameEditor();
-    } else {
-      lastTap.current = now;
-    }
   };
 
   const saveName = async () => {
     setSavingName(true);
     try {
-      await identity.saveFirstName(nameDraft);
+      const clean = nameDraft.trim().replace(/\s+/g, ' ');
+      if (clean.length < 3 || clean.length > 40 || /[<>\u0000-\u001F\u007F]/.test(clean)) throw new Error('Enter a public name between 3 and 40 characters.');
+      await identity.saveAlias(clean);
       setNameOpen(false);
     } catch (caught) {
       Alert.alert('Name not saved', caught instanceof Error ? caught.message : 'Please try again.');
@@ -105,12 +91,11 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
         {userId ? (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={`Welcome, ${identity.firstName}. Double-tap or hold to change your name.`}
-            delayLongPress={1400}
-            onLongPress={() => { longPressFired.current = true; openNameEditor(); }}
-            onPress={handleNamePress}
+            accessibilityLabel="Change your public name"
+            onPress={openNameEditor}
           >
-            <Text style={styles.welcome}>Welcome, {identity.firstName}!</Text>
+            <Text style={styles.welcome}>Welcome, {identity.alias || 'Friend'}!</Text>
+            <Text style={styles.changeName}>Change name</Text>
           </Pressable>
         ) : <Text style={styles.welcome}>Welcome, Friend!</Text>}
         <Text style={styles.eyebrow}>YOUR JOURNEY POINTS</Text>
@@ -152,10 +137,10 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
           <Pressable accessibilityRole="button" accessibilityLabel="Close name editor" onPress={() => setNameOpen(false)} style={styles.modalBackdrop} />
           <KeyboardAvoidingView pointerEvents="box-none" behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalCenter}>
             <View style={styles.modalCard}>
-              <Text style={styles.modalTitle}>Your welcome name</Text>
-              <Text style={styles.body}>This welcome name is private. Only your chosen leaderboard name appears publicly.</Text>
+              <Text style={styles.modalTitle}>Your public name</Text>
+              <Text style={styles.body}>This name appears in your welcome greeting and on the Bible & Conflict leaderboard.</Text>
               <TextInput
-                accessibilityLabel="First name"
+                accessibilityLabel="Public name"
                 autoCapitalize="words"
                 autoCorrect={false}
                 maxLength={40}
@@ -184,7 +169,8 @@ const styles = StyleSheet.create({
   heading: { color: colors.ivory, fontSize: 31, lineHeight: 38, fontWeight: '900' },
   body: { color: colors.muted, fontSize: 18, lineHeight: 27 },
   pointsCard: { borderRadius: radius.lg, padding: 22, backgroundColor: colors.tealDeep, borderWidth: 1, borderColor: colors.gold, gap: 8 },
-  welcome: { color: colors.ivory, fontSize: 32, lineHeight: 40, fontWeight: '900', textDecorationLine: 'underline', textDecorationColor: colors.gold },
+  welcome: { color: colors.ivory, fontSize: 40, lineHeight: 50, fontWeight: '900' },
+  changeName: { color: colors.gold, fontSize: 18, lineHeight: 26, fontWeight: '800', paddingVertical: 12 },
   points: { color: colors.ivory, fontSize: 52, lineHeight: 59, fontWeight: '900', marginVertical: 2 },
   track: { width: '100%', height: 12, borderRadius: 6, overflow: 'hidden', backgroundColor: 'rgba(1,12,24,0.5)', marginTop: 10 },
   fill: { height: '100%', borderRadius: 6, backgroundColor: colors.gold },

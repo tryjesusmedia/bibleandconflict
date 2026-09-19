@@ -25,13 +25,12 @@ export function ReadingBadgeButton({ reading, gallery = false }: { reading: Conf
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={`Earned badge: ${badge.label}. Reading ${reading.day}: ${badge.title}.`}
-      accessibilityHint="Tap to enlarge. Tap the enlarged badge again to shrink it."
+      accessibilityHint="Open full-screen badge"
       onPress={() => open(badge)}
       style={({ pressed }) => [styles.badgeButton, gallery ? styles.galleryBadge : styles.titleBadge, pressed && styles.pressed]}
     >
       <BadgeArt badge={badge} size={READING_BADGE_SIZE} />
       <Text style={styles.badgeNumber}>Reading {reading.day}</Text>
-      <Text style={styles.badgeLabel}>{badge.label}</Text>
     </Pressable>
   );
 }
@@ -111,10 +110,8 @@ export function ReadingBadgeProvider({ children }: { children: React.ReactNode }
                   <BadgeArt badge={selected} size={badgeSize} />
                 </Animated.View>
                 <Text style={styles.viewerNumber}>READING {selected.day} · {selected.book}</Text>
-                <Text style={styles.viewerLabel}>{selected.label}</Text>
                 <Text style={styles.viewerTitle}>{selected.title}</Text>
                 <Text style={styles.viewerReference}>{selected.reference}</Text>
-                <Text style={styles.viewerHint}>Tap the badge again to shrink</Text>
               </Pressable>
               <Pressable accessibilityRole="button" onPress={close} style={styles.closeButton}><Text style={styles.closeText}>Close badge</Text></Pressable>
             </ScrollView>
@@ -134,16 +131,13 @@ const styles = StyleSheet.create({
   galleryBadge: { width: '30%', minWidth: 80 },
   titleBadge: { width: 88, flexShrink: 0 },
   badgeNumber: { color: colors.gold, fontSize: 12, lineHeight: 17, fontWeight: '800', textAlign: 'center' },
-  badgeLabel: { color: colors.ivory, fontSize: 13, lineHeight: 18, textAlign: 'center' },
   pressed: { opacity: 0.7 },
   backdrop: { flex: 1, backgroundColor: colors.navy },
   viewerScroll: { flexGrow: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 16 },
   viewerButton: { width: '100%', alignItems: 'center', gap: 12 },
   viewerNumber: { color: colors.gold, fontSize: 16, lineHeight: 22, fontWeight: '900', letterSpacing: 1 },
-  viewerLabel: { color: colors.paper, fontSize: 28, lineHeight: 35, fontWeight: '900', textAlign: 'center' },
   viewerTitle: { color: colors.ivory, fontSize: 19, lineHeight: 27, textAlign: 'center' },
   viewerReference: { color: colors.muted, fontSize: 16, lineHeight: 23, textAlign: 'center' },
-  viewerHint: { color: colors.gold, fontSize: 16, lineHeight: 24, textAlign: 'center', marginTop: 8 },
   closeButton: { paddingHorizontal: 22, paddingVertical: 14, marginTop: 14, borderRadius: 20, borderWidth: 1, borderColor: colors.gold },
   closeText: { color: colors.ivory, fontSize: 17, fontWeight: '800' },
 });

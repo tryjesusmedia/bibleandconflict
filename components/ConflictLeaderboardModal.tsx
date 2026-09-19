@@ -162,24 +162,11 @@ export function ConflictLeaderboardModal({
               <View style={[styles.rankBadge, item.isCurrentUser && styles.currentRankBadge]}><Text style={[styles.rank, item.isCurrentUser && styles.currentRank]}>#{item.rank}</Text></View>
               <View style={styles.entryCopy}>
                 <View style={styles.entryTitleRow}>
-                  {item.isCurrentUser ? (
-                    <Pressable
-                      accessibilityRole="button"
-                      accessibilityLabel={`${item.alias}, your leaderboard name`}
-                      onPress={() => openAliasEditor(item.alias)}
-                      style={styles.aliasPress}
-                    >
-                      <Text numberOfLines={2} style={styles.entryAlias}>{item.alias}</Text>
-                    </Pressable>
-                  ) : <Text numberOfLines={2} style={styles.entryAlias}>{item.alias}</Text>}
+                  <Text numberOfLines={2} style={styles.entryAlias}>{item.alias}</Text>
                   {item.isCurrentUser ? <Text style={styles.youBadge}>YOU</Text> : null}
                 </View>
                 <Text style={styles.entryMeta}>{item.completedItems.toLocaleString()} reading item{item.completedItems === 1 ? '' : 's'} completed</Text>
-                {item.isCurrentUser ? (
-                  <Pressable accessibilityRole="button" accessibilityLabel="Change your leaderboard name" onPress={() => openAliasEditor(item.alias)} style={styles.changeNameButton}>
-                    <Text style={styles.changeNameText}>Change Name</Text>
-                  </Pressable>
-                ) : null}
+
               </View>
               <View style={styles.entryPoints}>
                 <Text style={styles.entryPointsNumber}>{item.journeyPoints.toLocaleString()}</Text>
