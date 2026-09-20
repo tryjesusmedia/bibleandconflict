@@ -222,14 +222,14 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.hero}>
-          <Text style={styles.heroEyebrow}>A SCRIPTURE-FIRST READING JOURNEY</Text>
+          <Text style={styles.heroEyebrow}>A SPIRITUAL READING JOURNEY</Text>
           <Text style={styles.heroTitle}>The Bible <Text style={styles.heroAmp}>&</Text>{'\n'}Conflict of the Ages</Text>
-          <Text style={styles.heroLead}><Text style={styles.heroLeadStrong}>Scripture always comes first.</Text> The Bible is the foundation, the authority, and the heart of every assignment. The Conflict of the Ages commentary never replaces the Word of God—it simply accompanies Scripture, adds historical and spiritual context, and helps you pause over truths you might otherwise pass too quickly.</Text>
           <Pressable accessibilityRole="button" accessibilityState={{ expanded: moreOpen }} onPress={() => setMoreOpen((value) => !value)} style={styles.readMoreButton}>
             <Text style={styles.readMoreText}>Read more about this journey</Text><Text style={styles.readMoreMark}>{moreOpen ? '−' : '+'}</Text>
           </Pressable>
           {moreOpen ? (
             <View style={styles.moreContent}>
+              <Text style={styles.moreParagraph}><Text style={styles.moreStrong}>Scripture always comes first.</Text> The Bible is the foundation, the authority, and the heart of every assignment. The Conflict of the Ages commentary never replaces the Word of God—it simply accompanies Scripture, adds historical and spiritual context, and helps you pause over truths you might otherwise pass too quickly.</Text>
               <Text style={styles.moreParagraph}>This journey will take you through the <Text style={styles.moreStrong}>entire Bible</Text> alongside the complete five-volume Conflict of the Ages set: <Text style={styles.italic}>Patriarchs and Prophets</Text>, <Text style={styles.italic}>Prophets and Kings</Text>, <Text style={styles.italic}>The Desire of Ages</Text>, <Text style={styles.italic}>The Acts of the Apostles</Text>, and <Text style={styles.italic}>The Great Controversy</Text>.</Text>
               <Text style={styles.moreParagraph}>Imagine reaching the final reading having followed the great story from Creation to restoration—not as disconnected passages, but as one unfolding revelation of God’s love. Commit to the journey, take it at your own pace, and we believe you will be richly blessed by the time you spend in God’s Word. The blessing is not merely in finishing a plan; it is in meeting God in Scripture, reading after reading.</Text>
               <View style={styles.foundation}>

@@ -81,12 +81,6 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
 
   return (
     <View style={styles.pageSection}>
-      <View style={styles.headingBlock}>
-        <Text style={styles.eyebrow}>JOURNEY POINTS</Text>
-        <Text style={styles.heading}>Celebrate steady progress.</Text>
-        <Text style={styles.body}>Each completed Scripture or companion-reading item earns 10 Journey Points.</Text>
-      </View>
-
       <View style={styles.pointsCard}>
         {userId ? (
           <Pressable
@@ -98,7 +92,7 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
             <Text style={styles.changeName}>Change name</Text>
           </Pressable>
         ) : <Text style={styles.welcome}>Welcome, Friend!</Text>}
-        <Text style={styles.eyebrow}>YOUR JOURNEY POINTS</Text>
+        <View style={styles.pointsLabel}><Text style={styles.eyebrow}>YOUR JOURNEY POINTS</Text><Text style={styles.pointsExplanation}>(Each chapter earns 10 points)</Text></View>
         <Text style={styles.points}>{rewards.journeyPoints.toLocaleString()}</Text>
         <Text style={styles.body}>{rewards.completedItems.toLocaleString()} of 1,696 reading items complete</Text>
         <View style={styles.track}><View style={[styles.fill, { width: `${Math.max(0, Math.min(rewards.nextMilestoneProgress * 100, 100))}%` }]} /></View>
@@ -168,7 +162,9 @@ const styles = StyleSheet.create({
   eyebrow: { color: colors.gold, fontSize: 15, lineHeight: 21, letterSpacing: 1.4, fontWeight: '900', marginTop: 4 },
   heading: { color: colors.ivory, fontSize: 31, lineHeight: 38, fontWeight: '900' },
   body: { color: colors.muted, fontSize: 18, lineHeight: 27 },
-  pointsCard: { borderRadius: radius.lg, padding: 22, backgroundColor: colors.tealDeep, borderWidth: 1, borderColor: colors.gold, gap: 8 },
+  pointsCard: { gap: 8 },
+  pointsLabel: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 8 },
+  pointsExplanation: { color: colors.ivory, fontSize: 16, lineHeight: 24 },
   welcome: { color: colors.ivory, fontSize: 40, lineHeight: 50, fontWeight: '900' },
   changeName: { color: colors.gold, fontSize: 18, lineHeight: 26, fontWeight: '800', paddingVertical: 12 },
   points: { color: colors.ivory, fontSize: 52, lineHeight: 59, fontWeight: '900', marginVertical: 2 },
