@@ -92,12 +92,6 @@ export function ConflictLeaderboardModal({
     };
   }, [signedIn, visible]);
 
-  function openAliasEditor(currentAlias: string) {
-    if (!signedIn || !currentAlias || aliasSaving) return;
-    setAliasDraft(currentAlias);
-    setAliasEditorOpen(true);
-  }
-
   async function saveAlias() {
     const clean = aliasDraft.trim().replace(/\s+/g, ' ');
     if (clean.length < 3 || clean.length > 40 || /[<>\u0000-\u001F\u007F]/.test(clean)) {
