@@ -132,12 +132,6 @@ function JourneyView() {
         <Text style={styles.viewTitle}>Journey</Text>
         <Text style={styles.viewDescription}>Begin with Scripture, then continue into the companion reading.</Text>
       </View>
-      <Card style={styles.continueCard}>
-        <Text style={styles.continueLabel}>CONTINUE YOUR JOURNEY</Text>
-        <Text style={styles.continueTitle}>{currentReading.title}</Text>
-        <Text style={styles.continueReference}>{currentReading.bibleReference}</Text>
-        <GoldButton title="Open this reading" onPress={() => router.push({ pathname: '/reading', params: { id: currentReading.id } })} />
-      </Card>
       <View style={styles.books}>
         {conflictPlan.books.map((book) => (
           <JourneyBook
@@ -335,10 +329,6 @@ const styles = StyleSheet.create({
   viewHeading: { gap: 5 },
   viewTitle: { color: colors.ivory, fontSize: 36, lineHeight: 42, fontWeight: '900' },
   viewDescription: { color: colors.muted, fontSize: 18, lineHeight: 28 },
-  continueCard: { gap: 10, backgroundColor: colors.continuePanel, borderColor: colors.teal },
-  continueLabel: { color: colors.gold, fontSize: 14, lineHeight: 20, letterSpacing: 1.3, fontWeight: '900' },
-  continueTitle: { color: colors.ivory, fontSize: 25, lineHeight: 32, fontWeight: '900' },
-  continueReference: { color: colors.muted, fontSize: 17, lineHeight: 24, marginBottom: 7 },
   books: { gap: 14 },
   bookCard: { backgroundColor: colors.panel, borderRadius: radius.lg, overflow: 'hidden', borderWidth: 1, borderColor: colors.border, borderTopWidth: 5 },
   bookHeader: { flexDirection: 'row', alignItems: 'center', minHeight: 104, padding: 18 },
