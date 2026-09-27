@@ -42,7 +42,9 @@ The dedicated Supabase project is `gabufylczphhykudwzbc` (Bible and Conflict). I
 
 ## App icon
 
-The launcher icon uses the owner-supplied `Lion and Lamb faithcraft shiny.png` (source SHA-256 `847e730af5705bff330a3e0301227b0ed525ecc07ab7536c531421876e3856b1`). Standard/iOS artwork is composited onto Midnight Navy in a 1024px opaque PNG. Android uses the same artwork centered in a transparent 1024px foreground with the configured Midnight Navy background; padding preserves the full logo under round and rounded launcher masks. Colors, lettering, and illustration are preserved.
+The 1.0.8 update uses the owner-supplied navy/teal lion-and-lamb icon (`1000024036.png`). Standard artwork is a 1024px opaque PNG. Android places the supplied square at 720px in a 1024px foreground, preserving the animals under the launcher mask. `assets/splash.png` is the owner-supplied navy/teal full Try Jesus Media logo, replacing the purple startup artwork. The in-app home-page logo is unchanged.
+
+Android version code 9 is prepared locally; a signed native rebuild is required before these launcher and startup changes appear on installed devices. This does not imply a published Play release.
 
 ## Reading badges
 
