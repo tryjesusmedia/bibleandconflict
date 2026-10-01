@@ -75,10 +75,11 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     minHeight: 54,
     paddingHorizontal: 18,
+    paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonText: { color: colors.navy, fontWeight: '900', fontSize: 17, lineHeight: 22, textAlign: 'center' },
+  buttonText: { color: colors.navy, fontWeight: '700', fontSize: 18, lineHeight: 25, textAlign: 'center' },
   outline: {
     borderColor: colors.gold,
     borderWidth: 1,

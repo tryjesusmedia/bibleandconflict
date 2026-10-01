@@ -119,13 +119,12 @@ export function ConflictLeaderboardModal({
           <Text style={styles.closeButtonText}>×</Text>
         </Pressable>
       </View>
-      <Text style={styles.supportiveCopy}>Journey Points celebrate reading progress. Every reading item completed is worth celebrating.</Text>
 
       {!signedIn ? (
         <View style={styles.joinCard}>
-          <Text style={styles.joinTitle}>Join with a public leaderboard name</Text>
-          <Text style={styles.joinBody}>Sign in with Google to view the leaderboard. You can customize your public name; your email, photo, and account ID are never shown here.</Text>
-          <GoldButton title="Sign In with Google to Join" loading={signInBusy} onPress={() => { void onSignIn(); }} />
+          <Text style={styles.joinTitle}>Leaderboard</Text>
+          <Text style={styles.joinBody}>Sign in to view the leaderboard. Only your public name and reading totals are shown.</Text>
+          <GoldButton title="Sign in with Google" loading={signInBusy} onPress={() => { void onSignIn(); }} />
         </View>
       ) : null}
 
@@ -144,9 +143,9 @@ export function ConflictLeaderboardModal({
             loading || !hasLoaded ? (
               <View style={styles.stateCard}><ActivityIndicator color={colors.gold} size="large" /><Text style={styles.stateText}>Loading the leaderboard…</Text></View>
             ) : loadError ? (
-              <View style={styles.stateCard}><Text style={styles.stateTitle}>Leaderboard unavailable</Text><Text style={styles.stateText}>Your reading progress is safe. You can try again without leaving your reading journey.</Text><OutlineButton title="Try Again" onPress={() => { void loadLeaderboard(); }} /></View>
+              <View style={styles.stateCard}><Text style={styles.stateTitle}>Leaderboard unavailable</Text><Text style={styles.stateText}>Please try again.</Text><OutlineButton title="Try Again" onPress={() => { void loadLeaderboard(); }} /></View>
             ) : (
-              <View style={styles.stateCard}><Text style={styles.stateTitle}>The journey is beginning</Text><Text style={styles.stateText}>No leaderboard entries are available yet.</Text></View>
+              <View style={styles.stateCard}><Text style={styles.stateTitle}>No readers yet</Text><Text style={styles.stateText}>No leaderboard entries are available yet.</Text></View>
             )
           ) : null}
           renderItem={({ item }) => (

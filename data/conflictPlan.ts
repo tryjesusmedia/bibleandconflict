@@ -143,3 +143,12 @@ export function conflictReadingComplete(reading: ConflictReading, completed: Rea
     || (reading.commentaryTasks.length > 0 && reading.commentaryTasks.every((task) => completed.has(task.progressIndex)));
   return bibleComplete && commentaryComplete;
 }
+
+export function conflictContinueIndex(lastIndex: number, completed: ReadonlySet<number>) {
+  const savedIndex = Number.isInteger(lastIndex) && lastIndex >= 0 && lastIndex < conflictPlan.readings.length ? lastIndex : 0;
+  for (let offset = 0; offset < conflictPlan.readings.length; offset += 1) {
+    const index = (savedIndex + offset) % conflictPlan.readings.length;
+    if (!conflictReadingComplete(conflictPlan.readings[index], completed)) return index;
+  }
+  return savedIndex;
+}
