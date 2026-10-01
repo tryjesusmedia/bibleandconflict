@@ -40,12 +40,11 @@ export function ReadingBadgeButton({ reading, gallery = false }: { reading: Conf
 export function EarnedReadingBadges() {
   const { completed } = useConflictJourney();
   const earned = conflictPlan.readings.filter(reading => conflictReadingComplete(reading, completed));
+  if (!earned.length) return null;
   return (
     <View style={styles.collection}>
       <Text style={styles.collectionTitle}>Earned badges · {earned.length}</Text>
-      {earned.length ? <View style={styles.gallery}>{earned.map(reading => <ReadingBadgeButton key={reading.id} reading={reading} gallery />)}</View> : (
-        <Text style={styles.empty}>Complete all the items in a reading to earn its badge. Your badges will appear here.</Text>
-      )}
+      <View style={styles.gallery}>{earned.map(reading => <ReadingBadgeButton key={reading.id} reading={reading} gallery />)}</View>
     </View>
   );
 }

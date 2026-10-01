@@ -11,7 +11,15 @@ const source = await readFile(new URL('../data/conflictPlan.ts', import.meta.url
 const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.ModuleKind.CommonJS } }).outputText;
 const exports = {};
 vm.runInNewContext(compiled, { exports, require: path => { assert.equal(path, '@/data/conflictPlan.json'); return rawPlan; } });
-const { conflictPlan, conflictReadingComplete } = exports;
+const { conflictPlan, conflictReadingComplete, conflictContinueIndex } = exports;
+const readingItems = reading => [...reading.bibleTasks, ...reading.commentaryTasks].map(task => task.progressIndex);
+assert.equal(conflictContinueIndex(0, new Set()), 0, 'New readers start at reading one');
+assert.equal(conflictContinueIndex(12, new Set()), 12, 'An unfinished saved reading stays selected');
+assert.equal(conflictContinueIndex(0, new Set(readingItems(conflictPlan.readings[0]).slice(0, -1))), 0, 'Partial readings must not be skipped');
+assert.equal(conflictContinueIndex(0, new Set(readingItems(conflictPlan.readings[0]))), 1, 'Completed saved readings advance to the next unfinished reading');
+assert.equal(conflictContinueIndex(263, new Set(readingItems(conflictPlan.readings[263]))), 0, 'The end wraps to earlier unfinished readings');
+assert.equal(conflictContinueIndex(88, new Set(conflictPlan.readings.flatMap(readingItems))), 88, 'Fully completed plans remain available to reread');
+for (const invalid of [-1, 264, NaN, 1.5]) assert.equal(conflictContinueIndex(invalid, new Set()), 0);
 assert.equal(art.catalog.length, 264);
 assert.equal(new Set(art.catalog.map(b => b.label)).size, 264, 'Every reading has its own label');
 assert.equal(new Set(art.catalog.map(b => [b.motif,b.palette,b.style,b.detail].join(':'))).size, 264, 'Each illustration has a distinct design, independent of its number');

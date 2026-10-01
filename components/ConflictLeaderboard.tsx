@@ -28,6 +28,7 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
   const identity = useConflictIdentity(userId);
   const rewards = summarizeConflictRewards(progress.completed);
   const [nameOpen, setNameOpen] = useState(false);
+  const [milestonesOpen, setMilestonesOpen] = useState(false);
   const [nameDraft, setNameDraft] = useState('');
   const [savingName, setSavingName] = useState(false);
   const [savingAlias, setSavingAlias] = useState(false);
@@ -73,12 +74,6 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
     }
   };
 
-  const nextLabel = rewards.nextMilestone === null
-    ? 'You completed the full journey.'
-    : rewards.nextMilestone === 1
-      ? 'Complete your first reading item to reach your first milestone.'
-      : `${rewards.itemsUntilNextMilestone.toLocaleString()} reading items to the ${rewards.nextMilestone.toLocaleString()}-item milestone.`;
-
   return (
     <View style={styles.pageSection}>
       <View style={styles.pointsCard}>
@@ -88,33 +83,28 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
             accessibilityLabel="Change your public name"
             onPress={openNameEditor}
           >
-            <Text style={styles.welcome}>Welcome, {identity.alias || 'Friend'}!</Text>
+            <Text style={styles.welcome}>{identity.alias || 'Your public name'}</Text>
             <Text style={styles.changeName}>Change name</Text>
           </Pressable>
-        ) : <Text style={styles.welcome}>Welcome, Friend!</Text>}
-        <View style={styles.pointsLabel}><Text style={styles.eyebrow}>YOUR JOURNEY POINTS</Text><Text style={styles.pointsExplanation}>(Each chapter earns 10 points)</Text></View>
+        ) : null}
+        <View style={styles.pointsLabel}><Text style={styles.eyebrow}>YOUR JOURNEY POINTS</Text></View>
         <Text style={styles.points}>{rewards.journeyPoints.toLocaleString()}</Text>
         <Text style={styles.body}>{rewards.completedItems.toLocaleString()} of 1,696 reading items complete</Text>
-        <View style={styles.track}><View style={[styles.fill, { width: `${Math.max(0, Math.min(rewards.nextMilestoneProgress * 100, 100))}%` }]} /></View>
-        <Text style={styles.small}>{nextLabel}</Text>
       </View>
 
       <View style={styles.panel}>
-        <Text style={styles.eyebrow}>MILESTONES</Text>
-        <Text style={styles.panelTitle}>Markers along the way</Text>
-        {CONFLICT_MILESTONES.map((milestone) => (
+        <GoldButton title="View leaderboard" onPress={() => setLeaderboardOpen(true)} />
+      </View>
+      <View style={styles.panel}>
+        <Pressable accessibilityRole="button" accessibilityState={{ expanded: milestonesOpen }} onPress={() => setMilestonesOpen(value => !value)} style={styles.milestoneToggle}><Text style={styles.panelTitle}>Milestones {milestonesOpen ? '−' : '+'}</Text></Pressable>
+        {milestonesOpen ? CONFLICT_MILESTONES.map((milestone) => (
           <View key={milestone} style={styles.milestone}>
             <Text style={[styles.milestoneMark, rewards.completedItems >= milestone && styles.earned]}>{rewards.completedItems >= milestone ? '✓' : '◇'}</Text>
             <Text style={styles.milestoneText}>{milestone === 1696 ? 'Journey complete' : milestone === 1 ? '1 reading item' : `${milestone.toLocaleString()} reading items`}</Text>
           </View>
-        ))}
+        )) : null}
       </View>
 
-      <View style={styles.panel}>
-        <Text style={styles.eyebrow}>ALL READERS</Text>
-        <Text style={styles.panelTitle}>Journey Leaderboard</Text>
-        <GoldButton title="Open Leaderboard" onPress={() => setLeaderboardOpen(true)} />
-      </View>
       {active && leaderboardOpen ? <ConflictLeaderboardModal
         key={userId ?? 'guest'}
         visible={active && leaderboardOpen}
@@ -132,7 +122,7 @@ export function ConflictLeaderboard({ active }: { active: boolean }) {
           <KeyboardAvoidingView pointerEvents="box-none" behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.modalCenter}>
             <View style={styles.modalCard}>
               <Text style={styles.modalTitle}>Your public name</Text>
-              <Text style={styles.body}>This name appears in your welcome greeting and on the Bible & Conflict leaderboard.</Text>
+              <Text style={styles.body}>This name appears publicly on the leaderboard.</Text>
               <TextInput
                 accessibilityLabel="Public name"
                 autoCapitalize="words"
@@ -165,14 +155,15 @@ const styles = StyleSheet.create({
   pointsCard: { gap: 8 },
   pointsLabel: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'baseline', columnGap: 8 },
   pointsExplanation: { color: colors.ivory, fontSize: 16, lineHeight: 24 },
-  welcome: { color: colors.ivory, fontSize: 40, lineHeight: 50, fontWeight: '900' },
+  welcome: { color: colors.ivory, fontSize: 24, lineHeight: 31, fontWeight: '900' },
   changeName: { color: colors.gold, fontSize: 18, lineHeight: 26, fontWeight: '800', paddingVertical: 12 },
-  points: { color: colors.ivory, fontSize: 52, lineHeight: 59, fontWeight: '900', marginVertical: 2 },
+  points: { color: colors.ivory, fontSize: 32, lineHeight: 40, fontWeight: '900', marginVertical: 2 },
   track: { width: '100%', height: 12, borderRadius: 6, overflow: 'hidden', backgroundColor: 'rgba(1,12,24,0.5)', marginTop: 10 },
   fill: { height: '100%', borderRadius: 6, backgroundColor: colors.gold },
   small: { color: colors.ivory, fontSize: 15, lineHeight: 22, marginTop: 3 },
-  panel: { borderRadius: radius.lg, padding: 20, backgroundColor: colors.panel, borderWidth: 1, borderColor: colors.border },
-  panelTitle: { color: colors.ivory, fontSize: 25, lineHeight: 31, fontWeight: '900', marginBottom: 14 },
+  panel: { gap: 12 },
+  milestoneToggle: { minHeight: 48, justifyContent: 'center' },
+  panelTitle: { color: colors.ivory, fontSize: 20, lineHeight: 27, fontWeight: '700' },
   milestone: { minHeight: 53, flexDirection: 'row', alignItems: 'center', gap: 14, borderTopWidth: 1, borderTopColor: colors.border },
   milestoneMark: { color: colors.muted, fontSize: 25, width: 28 },
   earned: { color: colors.green },
