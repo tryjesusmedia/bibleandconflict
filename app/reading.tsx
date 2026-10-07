@@ -12,6 +12,7 @@ import {
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountMenu } from '@/components/AccountMenu';
+import { ReadingBadgeButton } from '@/components/ReadingBadges';
 import { GoldButton } from '@/components/ui';
 import { colors, radius } from '@/constants/theme';
 import { useConflictJourney } from '@/contexts/ConflictJourneyContext';
@@ -162,6 +163,7 @@ export default function ReadingScreen() {
           <Text style={styles.source}>Reading {reading.day}</Text>
           <Text style={styles.title}>{reading.title}</Text>
           <Text accessibilityLiveRegion="polite" style={[styles.source, readingComplete && styles.finished]}>{readingComplete ? '✓ Reading complete' : done + '/' + allTasks.length + ' items complete'}</Text>
+          {readingComplete ? <ReadingBadgeButton reading={reading} /> : null}
         </View>
         {reading.bibleTasks.length ? <View style={styles.section}>
           <Text style={styles.sectionTitle}>1. Bible</Text>

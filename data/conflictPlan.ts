@@ -72,6 +72,19 @@ type RawPlan = Omit<ConflictPlan, 'readings'> & {
   })[];
 };
 
+// Presentation only: preserve the canonical snapshot, task order, IDs and saved progress.
+function readingTitle(reading: RawPlan['readings'][number]): string {
+  if (!/^Chapters?\s+\d+(?:\s*[-–,]\s*\d+)*$/iu.test(reading.title)) return reading.title;
+  const chapters = new Set<number>();
+  for (const match of reading.title.matchAll(/(\d+)(?:\s*[-–]\s*(\d+))?/gu)) {
+    for (let chapter = Number(match[1]); chapter <= Number(match[2] ?? match[1]); chapter += 1) chapters.add(chapter);
+  }
+  const titles = reading.commentaryTasks
+    .filter(task => task.chapterNumber !== null && chapters.has(task.chapterNumber))
+    .map(task => task.title.replace(/^Chapter\s+\d+\s*[—–:-]\s*/iu, '').trim());
+  return titles.length ? [...new Set(titles)].join(' · ') : reading.title;
+}
+
 function prepareConflictPlan(source: RawPlan): ConflictPlan {
   const taskCopies = source.readings.flatMap((reading) => [
     ...reading.bibleTasks.map((task) => ({ ...task })),
@@ -102,6 +115,7 @@ function prepareConflictPlan(source: RawPlan): ConflictPlan {
 
   const readings = source.readings.map((reading) => ({
     ...reading,
+    title: readingTitle(reading),
     bibleTasks: reading.bibleTasks.map(assignIndex),
     commentaryTasks: reading.commentaryTasks.map(assignIndex),
   })) as ConflictReading[];

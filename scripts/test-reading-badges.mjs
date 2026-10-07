@@ -12,6 +12,21 @@ const compiled = ts.transpileModule(source, { compilerOptions: { module: ts.Modu
 const exports = {};
 vm.runInNewContext(compiled, { exports, require: path => { assert.equal(path, '@/data/conflictPlan.json'); return rawPlan; } });
 const { conflictPlan, conflictReadingComplete, conflictContinueIndex } = exports;
+const chapterOnly = /^Chapters?\s+\d/iu;
+const titled = rawPlan.readings.filter(reading => chapterOnly.test(reading.title));
+assert.equal(titled.length, 43);
+assert.ok(conflictPlan.readings.every(reading => !chapterOnly.test(reading.title)), 'All chapter-only reading headings receive descriptive titles');
+assert.equal(conflictPlan.readings[126].title, '“God With Us” · The Chosen People');
+assert.equal(conflictPlan.readings[127].title, '“The Fullness of the Time”');
+assert.equal(conflictPlan.readings[204].title, '“Peace Be Unto You”', 'Titles use the cited chapter, not an overlapping companion task');
+for (let index = 0; index < rawPlan.readings.length; index += 1) {
+  const raw = rawPlan.readings[index];
+  const prepared = conflictPlan.readings[index];
+  assert.equal(prepared.id, raw.id);
+  assert.equal(prepared.day, raw.day);
+  assert.equal(prepared.sourceKey, raw.sourceKey);
+  if (!chapterOnly.test(raw.title)) assert.equal(prepared.title, raw.title, 'Existing descriptive titles stay unchanged');
+}
 const readingItems = reading => [...reading.bibleTasks, ...reading.commentaryTasks].map(task => task.progressIndex);
 assert.equal(conflictContinueIndex(0, new Set()), 0, 'New readers start at reading one');
 assert.equal(conflictContinueIndex(12, new Set()), 12, 'An unfinished saved reading stays selected');

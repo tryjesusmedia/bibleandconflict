@@ -4,7 +4,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountMenu } from '@/components/AccountMenu';
 import { ConflictLeaderboard } from '@/components/ConflictLeaderboard';
-import { EarnedReadingBadges } from '@/components/ReadingBadges';
+import { EarnedReadingBadges, ReadingBadgeButton } from '@/components/ReadingBadges';
 import { GoldButton } from '@/components/ui';
 import { colors, radius } from '@/constants/theme';
 import { useConflictJourney } from '@/contexts/ConflictJourneyContext';
@@ -39,17 +39,20 @@ function JourneyBook({ book, expanded, onToggle }: { book: ConflictBook; expande
         const index = conflictPlan.readings.indexOf(reading);
         const complete = conflictReadingComplete(reading, completed);
         return (
-          <Pressable key={reading.id} accessibilityRole="button" accessibilityLabel={`Open reading ${reading.day}: ${reading.title}${complete ? ', complete' : ''}`} onPress={() => {
+          <View key={reading.id} style={[styles.readingRow, index === progress.lastIndex && styles.currentReading]}>
+          <Pressable accessibilityRole="button" accessibilityLabel={`Open reading ${reading.day}: ${reading.title}${complete ? ', complete' : ''}`} onPress={() => {
             setReading(index);
             router.push({ pathname: '/reading', params: { id: reading.id } });
-          }} style={({ pressed }) => [styles.readingRow, index === progress.lastIndex && styles.currentReading, pressed && styles.pressed]}>
-            <Text style={styles.readingNumber}>{reading.day}</Text>
+          }} style={({ pressed }) => [styles.readingLink, pressed && styles.pressed]}>
             <View style={styles.bookCopy}>
+              <Text style={styles.readingNumber}>READING {reading.day}</Text>
               <Text style={styles.readingTitle}>{reading.title}</Text>
               {complete ? <Text style={styles.completeText}>✓ Complete</Text> : null}
             </View>
             <Text style={styles.chevron}>›</Text>
           </Pressable>
+          {complete ? <ReadingBadgeButton reading={reading} /> : null}
+          </View>
         );
       }) : null}
     </View>
@@ -113,17 +116,17 @@ export default function HomeScreen() {
         <View style={styles.bookCopy}><Text style={styles.brand}>Try Jesus Media</Text><Text style={styles.title}>Bible & Conflict of the Ages</Text></View>
         <AccountMenu />
       </View>
-      <ScrollView key={activeView} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <View accessibilityRole="tablist" style={styles.tabs}>
+        {views.map(view => <Pressable key={view.name} accessibilityRole="tab" accessibilityState={{ selected: activeView === view.name }} onPress={() => setActiveView(view.name)} style={[styles.tab, activeView === view.name && styles.tabActive]}>
+          <Text style={[styles.tabText, activeView === view.name && styles.tabTextActive]}>{view.label}</Text>
+        </Pressable>)}
+      </View>
+      <ScrollView key={activeView} contentContainerStyle={[styles.content, { paddingBottom: Math.max(insets.bottom + 24, 32) }]} showsVerticalScrollIndicator={false}>
         {error ? <Text accessibilityRole="alert" style={styles.error}>{error}</Text> : null}
         {activeView === 'journey' ? <JourneyView /> : null}
         {activeView === 'progress' ? <ProgressView /> : null}
         {activeView === 'leaderboard' ? <ConflictLeaderboard active /> : null}
       </ScrollView>
-      <View accessibilityRole="tablist" style={[styles.tabs, { paddingBottom: Math.max(insets.bottom, 8) }]}>
-        {views.map(view => <Pressable key={view.name} accessibilityRole="tab" accessibilityState={{ selected: activeView === view.name }} onPress={() => setActiveView(view.name)} style={[styles.tab, activeView === view.name && styles.tabActive]}>
-          <Text style={[styles.tabText, activeView === view.name && styles.tabTextActive]}>{view.label}</Text>
-        </Pressable>)}
-      </View>
     </View>
   );
 }
@@ -131,7 +134,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   page: { flex: 1, backgroundColor: colors.navy },
   loading: { flex: 1, backgroundColor: colors.navy, alignItems: 'center', justifyContent: 'center' },
-  header: { paddingHorizontal: 20, paddingBottom: 18, flexDirection: 'row', alignItems: 'center', gap: 12, borderBottomWidth: 1, borderBottomColor: colors.border },
+  header: { paddingHorizontal: 20, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', gap: 12 },
   brand: { color: colors.muted, fontSize: 14, lineHeight: 20, marginBottom: 6 },
   title: { color: colors.ivory, fontSize: 24, lineHeight: 30, fontWeight: '700' },
   bookCopy: { flex: 1, minWidth: 0 },
@@ -146,19 +149,20 @@ const styles = StyleSheet.create({
   muted: { color: colors.muted, fontSize: 16, lineHeight: 23 },
   expandMark: { color: colors.gold, fontSize: 28, width: 28, textAlign: 'center' },
   readingRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 15, paddingHorizontal: 8, borderTopWidth: 1, borderTopColor: colors.border },
+  readingLink: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: 8, minHeight: 64 },
   currentReading: { backgroundColor: colors.panel, borderRadius: radius.sm },
-  readingNumber: { color: colors.muted, fontSize: 16, lineHeight: 23, width: 30, textAlign: 'center' },
-  readingTitle: { color: colors.ivory, fontSize: 18, lineHeight: 25, fontWeight: '600' },
+  readingNumber: { color: colors.gold, fontSize: 12, lineHeight: 18, fontWeight: '800', letterSpacing: 1, marginBottom: 5 },
+  readingTitle: { color: colors.ivory, fontSize: 18, lineHeight: 25, fontWeight: '800' },
   completeText: { color: colors.green, fontSize: 15, lineHeight: 22, marginTop: 3 },
   chevron: { color: colors.gold, fontSize: 28, width: 20, textAlign: 'center' },
   progressSummary: { gap: 5, paddingBottom: 8 },
   progressNumber: { color: colors.ivory, fontSize: 32, lineHeight: 40, fontWeight: '700' },
   progressRow: { gap: 5, borderTopWidth: 1, borderTopColor: colors.border, paddingTop: 16 },
-  tabs: { flexDirection: 'row', backgroundColor: colors.navy2, borderTopWidth: 1, borderTopColor: colors.border },
-  tab: { flex: 1, minHeight: 62, justifyContent: 'center', alignItems: 'center', borderTopWidth: 3, borderTopColor: 'transparent', paddingHorizontal: 4, paddingVertical: 10 },
-  tabActive: { borderTopColor: colors.gold },
-  tabText: { color: colors.muted, fontSize: 16, lineHeight: 22, fontWeight: '600', textAlign: 'center' },
-  tabTextActive: { color: colors.gold },
+  tabs: { flexDirection: 'row', gap: 6, paddingHorizontal: 16, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: colors.border },
+  tab: { flex: 1, minWidth: 0, minHeight: 50, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: radius.sm, paddingHorizontal: 4, paddingVertical: 12 },
+  tabActive: { backgroundColor: colors.gold, borderColor: colors.gold },
+  tabText: { color: colors.gold, fontSize: 16, lineHeight: 22, fontWeight: '800', textAlign: 'center' },
+  tabTextActive: { color: colors.navy },
   error: { color: colors.ivory, backgroundColor: '#672B35', borderRadius: radius.sm, padding: 15, fontSize: 16, lineHeight: 23, marginBottom: 20 },
   pressed: { opacity: 0.72 },
 });

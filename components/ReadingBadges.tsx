@@ -20,7 +20,8 @@ const BadgeArt = React.memo(function BadgeArt({ badge, size }: { badge: ReadingB
 export function ReadingBadgeButton({ reading, gallery = false }: { reading: ConflictReading; gallery?: boolean }) {
   const open = useContext(BadgeViewerContext);
   const [cellWidth, setCellWidth] = useState(READING_BADGE_SIZE);
-  const badge = getBadge(reading.id);
+  const originalBadge = getBadge(reading.id);
+  const badge = originalBadge ? { ...originalBadge, title: reading.title } : null;
   if (!badge) return null;
   return (
     <Pressable
