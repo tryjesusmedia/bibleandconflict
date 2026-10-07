@@ -34,7 +34,7 @@ assert.match(home, /label: 'Leaderboard'/u);
 assert.ok(home.indexOf('<View accessibilityRole="tablist"') < home.indexOf('<ScrollView key={activeView}'), 'Bold tabs stay above the scrolling content');
 assert.match(home, /tabText: [^\n]*fontWeight: '800'/u);
 assert.match(home, /tabActive: [^\n]*backgroundColor: colors.gold/u);
-assert.match(home, /leaderboardTab: \{ flex: 1\.35 \}/u, 'The longest label receives enough width');
+assert.match(home, /leaderboardTab: \{ flex: 1\.45 \}/u, 'The longest label receives enough width');
 assert.match(home, /width < 360 && styles.compactTabText/u, 'Small phones retain readable, non-overlapping labels');
 assert.match(home, /complete \? <ReadingBadgeButton reading=\{reading\} \/> : null/u, 'Only completed list rows show their earned badge');
 assert.match(reading, /readingComplete \? <ReadingBadgeButton reading=\{reading\} \/> : null/u, 'Completed reading detail also shows its badge');
