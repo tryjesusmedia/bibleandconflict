@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AccountMenu } from '@/components/AccountMenu';
@@ -106,6 +106,7 @@ function ProgressView() {
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
   const { ready, error, refresh } = useConflictJourney();
   const [activeView, setActiveView] = useState<ViewName>('journey');
   useFocusEffect(React.useCallback(() => { if (ready) void refresh(true); }, [ready, refresh]));
@@ -117,8 +118,8 @@ export default function HomeScreen() {
         <AccountMenu />
       </View>
       <View accessibilityRole="tablist" style={styles.tabs}>
-        {views.map(view => <Pressable key={view.name} accessibilityRole="tab" accessibilityState={{ selected: activeView === view.name }} onPress={() => setActiveView(view.name)} style={[styles.tab, activeView === view.name && styles.tabActive]}>
-          <Text style={[styles.tabText, activeView === view.name && styles.tabTextActive]}>{view.label}</Text>
+        {views.map(view => <Pressable key={view.name} accessibilityRole="tab" accessibilityState={{ selected: activeView === view.name }} onPress={() => setActiveView(view.name)} style={[styles.tab, view.name === 'leaderboard' && styles.leaderboardTab, activeView === view.name && styles.tabActive]}>
+          <Text style={[styles.tabText, width < 360 && styles.compactTabText, activeView === view.name && styles.tabTextActive]}>{view.label}</Text>
         </Pressable>)}
       </View>
       <ScrollView key={activeView} contentContainerStyle={[styles.content, { paddingBottom: Math.max(insets.bottom + 24, 32) }]} showsVerticalScrollIndicator={false}>
@@ -161,7 +162,9 @@ const styles = StyleSheet.create({
   tabs: { flexDirection: 'row', gap: 6, paddingHorizontal: 16, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: colors.border },
   tab: { flex: 1, minWidth: 0, minHeight: 50, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: colors.border, borderRadius: radius.sm, paddingHorizontal: 4, paddingVertical: 12 },
   tabActive: { backgroundColor: colors.gold, borderColor: colors.gold },
-  tabText: { color: colors.gold, fontSize: 16, lineHeight: 22, fontWeight: '800', textAlign: 'center' },
+  leaderboardTab: { flex: 1.35 },
+  tabText: { color: colors.gold, fontSize: 16, lineHeight: 22, fontWeight: '800', textAlign: 'center', alignSelf: 'stretch', flexShrink: 1 },
+  compactTabText: { fontSize: 14, lineHeight: 20 },
   tabTextActive: { color: colors.navy },
   error: { color: colors.ivory, backgroundColor: '#672B35', borderRadius: radius.sm, padding: 15, fontSize: 16, lineHeight: 23, marginBottom: 20 },
   pressed: { opacity: 0.72 },
