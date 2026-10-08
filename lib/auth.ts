@@ -1,5 +1,6 @@
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
+import { router } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { createAuthCallbackHandler } from '@/lib/authCallback';
 
@@ -22,5 +23,9 @@ export async function signInWithGoogle() {
 
   const result = await WebBrowser.openAuthSessionAsync(data.url, oauthRedirectUri);
   if (result.type !== 'success') return false;
-  return completeAuthCallback(result.url);
+  const completed = await completeAuthCallback(result.url);
+  // The browser result may arrive before the callback screen mounts.
+  // Both delivery paths must leave OAuth on the real readings screen.
+  if (completed) router.replace('/');
+  return completed;
 }

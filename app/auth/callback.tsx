@@ -24,8 +24,9 @@ export default function AuthCallback() {
     let mounted = true;
     void completeAuthCallback(callbackUrl ?? oauthRedirectUri).then(() => {
       if (!mounted) return;
-      if (router.canGoBack()) router.back();
-      else router.replace('/');
+      // The previous entry can be an empty OAuth screen or another callback.
+      // Always return to readings, including late links and cold launches.
+      router.replace('/');
     }).catch(() => {
       if (mounted) setError('We could not finish signing you in. Please return to the app and try again.');
     });

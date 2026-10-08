@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 const { createAuthCallbackHandler } = await import(new URL('../lib/authCallback.ts', import.meta.url));
 const calls=[];
 let session = null;
@@ -30,3 +31,13 @@ assert.deepEqual(calls.at(-1),{access_token:'test-access',refresh_token:'test-re
 session=null;
 await assert.rejects(complete('tryjesusjourney://auth/callback#access_token=test-access&refresh_token=test-refresh'),/session is unavailable/);
 console.log('Callback tests passed: concurrent and late delivery, account switch, PKCE flow, errors, implicit tokens, and signed-out replay.');
+
+// Guard both delivery paths against returning to the blank OAuth history entry.
+const callbackScreen = await readFile(new URL('../app/auth/callback.tsx', import.meta.url), 'utf8');
+const browserFlow = await readFile(new URL('../lib/auth.ts', import.meta.url), 'utf8');
+assert.doesNotMatch(callbackScreen, /router\.(back|canGoBack)\(/);
+assert.match(callbackScreen, /if \(!mounted\) return;[\s\S]*?router\.replace\('\/'\)/);
+assert.match(browserFlow, /const completed = await completeAuthCallback\(result.url\);[\s\S]*?if \(completed\) router\.replace\('\/'\)/);
+assert.match(browserFlow, /if \(result.type !== 'success'\) return false;/);
+assert.match(callbackScreen, /onPress=\{\(\) => router\.replace\('\/'\)\}/);
+console.log('Return checks passed: warm completion, late callback, cold launch and error recovery target readings; cancellation does not navigate.');

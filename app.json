@@ -2,7 +2,7 @@
   "expo": {
     "name": "Bible and Conflict of the Ages",
     "slug": "bible-and-conflict-of-the-ages",
-    "version": "1.0.10",
+    "version": "1.0.11",
     "orientation": "portrait",
     "scheme": "bibleandconflict",
     "userInterfaceStyle": "dark",
@@ -17,7 +17,7 @@
     },
     "android": {
       "package": "com.tryjesusmedia.bibleandconflict",
-      "versionCode": 11,
+      "versionCode": 12,
       "softwareKeyboardLayoutMode": "resize",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-padded.png",
